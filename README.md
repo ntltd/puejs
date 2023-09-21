@@ -2,7 +2,6 @@
 
 A lightweight fartend framework
 
-
 ## What's inside?
 
 This Turborepo includes the following packages/apps:
