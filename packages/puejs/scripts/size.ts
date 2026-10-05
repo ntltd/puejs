@@ -31,10 +31,12 @@ const importOf = (names: string, path: string): string =>
   `import { ${names} } from ${JSON.stringify(join(dist, path))};\nconsole.log(${names});\n`;
 
 const total = await bundledSize(importOf("createEmitter", "index.js"));
-const staccato = await bundledSize(importOf("staccato", "odors/index.js"));
-const sustained = await bundledSize(importOf("sustained", "odors/index.js"));
+const sizes: Record<string, number> = {};
+for (const name of ["staccato", "sustained", "soprano", "pesante", "fortissimo"]) {
+  sizes[name] = await bundledSize(importOf(name, "odors/index.js"));
+}
 
-console.log(`total (core + odors): ${kilobytes(total)} gzip`);
-console.log(`staccato: ${kilobytes(staccato)} gzip`);
-console.log(`sustained: ${kilobytes(sustained)} gzip`);
-console.log(`core without odors: ${kilobytes(total - staccato - sustained)} gzip`);
+// createEmitter bundles the preset odors (staccato, sustained); the others are opt-in.
+console.log(`createEmitter (core + preset odors): ${kilobytes(total)} gzip`);
+for (const [name, size] of Object.entries(sizes)) console.log(`${name}: ${kilobytes(size)} gzip`);
+console.log(`core without odors: ${kilobytes(total - sizes.staccato - sizes.sustained)} gzip`);

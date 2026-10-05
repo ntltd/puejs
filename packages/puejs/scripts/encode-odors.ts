@@ -11,6 +11,10 @@ const odors = [
   // Re-encoded to mono 22.05 kHz to match fart-chubby.mp3 and shrink the inlined payload.
   { name: "staccato", source: "fart-dry.mp3", tonnage: [0, 0.6], reencode: true },
   { name: "sustained", source: "fart-chubby.mp3", tonnage: [0.4, 1], reencode: false },
+  // Expressive odors: opt-in only (not referenced by presets), re-encoded with the same settings.
+  { name: "soprano", source: "fart-high.mp3", tonnage: [0.3, 0.8], reencode: true },
+  { name: "pesante", source: "fart-greasy.mp3", tonnage: [0.5, 1], reencode: true },
+  { name: "fortissimo", source: "fart-long-loud.mp3", tonnage: [0.85, 1], reencode: true },
 ];
 
 const work = mkdtempSync(join(tmpdir(), "puejs-odors-"));
