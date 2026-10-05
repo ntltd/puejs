@@ -45,7 +45,7 @@ const visual = css({
 });
 
 function LatencyVisual(): React.JSX.Element {
-  // Normalised emission latency samples (ms) over the last 32 scroll events.
+  // Illustrative relative intensity of the last 32 emissions.
   const samples = [
     0.9, 1.1, 0.8, 1.2, 0.9, 1.0, 1.4, 0.8, 0.9, 1.1, 1.0, 0.7, 1.3, 0.9, 1.0, 1.8, 0.9, 0.8, 1.1, 1.0, 0.9, 1.2, 0.8,
     1.0, 0.9, 1.1, 1.5, 0.9, 0.8, 1.0, 1.1, 0.9,
@@ -62,8 +62,8 @@ function LatencyVisual(): React.JSX.Element {
           "& > span": { whiteSpace: "nowrap" },
         })}
       >
-        <span>scheduling delay · last 32 events</span>
-        <span className={css({ color: "primary" })}>budget 2.0 ms</span>
+        <span>emission timeline · last 32 events</span>
+        <span className={css({ color: "primary" })}>lead time 5 ms</span>
       </div>
       <div
         className={css({
@@ -114,10 +114,10 @@ function LatencyVisual(): React.JSX.Element {
         })}
       >
         <span>
-          p50 <span className={css({ color: "fg" })}>0.9 ms</span>
+          detection <span className={css({ color: "fg" })}>same frame</span>
         </span>
         <span>
-          p99 <span className={css({ color: "fg" })}>1.8 ms</span>
+          scheduling <span className={css({ color: "fg" })}>{"< 1 ms"}</span>
         </span>
         <span>
           clock <span className={css({ color: "fg" })}>Web Audio</span>

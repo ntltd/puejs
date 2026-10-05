@@ -10,7 +10,8 @@ const emissionListeners = new Set<(emission: EmissionEvent) => void>();
 
 function getEmitter(): Emitter {
   if (!emitter) {
-    emitter = createEmitter(window, { preset: "organic" });
+    // The toggle is an explicit opt-in, so reduced motion does not silence it.
+    emitter = createEmitter(window, { preset: "organic", respectReducedMotion: false });
     emitter.on("emit", (emission) => {
       for (const listener of emissionListeners) listener(emission);
     });

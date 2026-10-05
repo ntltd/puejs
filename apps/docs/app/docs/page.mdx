@@ -31,13 +31,13 @@ These principles are expanded in the [Manifesto](/manifesto).
 
 ## Browser support
 
-Pue JS requires the Web Audio API, available in every evergreen browser.
+Pue JS requires the Web Audio API and ships ES2022 syntax, both available in every evergreen browser.
 
 | Browser | Minimum version |
 | ------- | --------------- |
-| Chrome  | 35              |
-| Edge    | 79              |
-| Firefox | 25              |
+| Chrome  | 80              |
+| Edge    | 80              |
+| Firefox | 74              |
 | Safari  | 14.1            |
 
 In unsupported environments — including server-side rendering — `createEmitter` returns an inert emitter. Your application keeps working; it simply remains silent. Use [`isSupported()`](/docs/api#issupported) to detect this ahead of time.

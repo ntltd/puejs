@@ -47,12 +47,16 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const feed = ref<HTMLElement | null>(null);
 let emitter: Emitter | null = null;
+const start = (): void => void emitter?.start();
 
 onMounted(() => {
   emitter = createEmitter(feed.value!, { preset: "organic" });
-  window.addEventListener("pointerdown", () => emitter?.start(), { once: true });
+  window.addEventListener("pointerdown", start, { once: true });
 });
-onBeforeUnmount(() => emitter?.destroy());
+onBeforeUnmount(() => {
+  window.removeEventListener("pointerdown", start);
+  emitter?.destroy();
+});
 </script>
 
 <template>
