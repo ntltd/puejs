@@ -1,26 +1,15 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { CodeShowcase } from "../components/landing/code-showcase";
+import { Features } from "../components/landing/features";
+import { Hero } from "../components/landing/hero";
+import { LogoCloud } from "../components/landing/logo-cloud";
 
-const Page = (): JSX.Element => {
+export default function Page(): React.JSX.Element {
   return (
-    <main className={styles.main}>
-      <div className={styles.logoContainer}>
-        <Image
-          alt="pue.js"
-          className={styles.logo}
-          sizes="100vw"
-          style={{
-            width: "100%",
-            height: "auto",
-          }}
-          width={590}
-          height={185}
-          src="/puejs.png"
-        />
-      </div>
-      <p className={styles.soon}>SOON</p>
+    <main>
+      <Hero />
+      <LogoCloud />
+      <Features />
+      <CodeShowcase />
     </main>
   );
-};
-
-export default Page;
+}

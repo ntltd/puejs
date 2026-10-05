@@ -1,0 +1,50 @@
+export const metadata = {
+  title: "Introduction",
+  description: "Pue JS is a zero-dependency acoustic feedback layer for scroll interactions.",
+};
+
+# Introduction
+
+Pue JS is a zero-dependency, strictly typed acoustic feedback layer for the web. It observes the kinematics of a scroll container and translates them, in real time, into organic gaseous emissions — synthesized procedurally, spatialized, and scheduled entirely off the main thread.
+
+It is designed for teams who believe that interfaces should be felt, not merely seen.
+
+## What Pue JS does
+
+Every scroll interaction carries information: direction, distance, velocity, acceleration. Most applications discard it. Pue JS captures this signal and renders it as audible feedback through a deterministic pipeline:
+
+1. **Sampling** — scroll position is sampled once per animation frame through passive listeners.
+2. **Kinematics** — instantaneous velocity is derived and smoothed with a critically damped filter.
+3. **Tonnage** — velocity is mapped to gain through a configurable tonnage curve.
+4. **Synthesis** — an odor module procedurally generates the emission inside an `AudioWorklet`.
+5. **Spatialization** — the signal is convolved with the impulse response of a simulated room.
+
+No audio files are shipped. Every emission is synthesized on demand, which keeps the core bundle at **1.4 kB gzip**.
+
+## Design principles
+
+- **Determinism.** Identical scroll input produces identical acoustic output. Emissions can be snapshot-tested.
+- **The main thread is sacred.** Synthesis and scheduling run in an `AudioWorklet`. Scroll handlers are passive and never block rendering.
+- **Pay for what you use.** Odors, rooms and adapters are isolated ES modules. Unused code is eliminated at build time.
+- **Consent first.** Pue JS never produces sound before an explicit user gesture and honours `prefers-reduced-motion` by default.
+
+These principles are expanded in the [Manifesto](/manifesto).
+
+## Browser support
+
+Pue JS requires `AudioWorklet`, which is available in every evergreen browser. It must run in a [secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts) (HTTPS or `localhost`).
+
+| Browser | Minimum version |
+| ------- | --------------- |
+| Chrome  | 66              |
+| Edge    | 79              |
+| Firefox | 76              |
+| Safari  | 14.1            |
+
+In unsupported environments — including server-side rendering — `createEmitter` returns an inert emitter. Your application keeps working; it simply remains silent. Use [`isSupported()`](/docs/api#issupported) to detect this ahead of time.
+
+## Next steps
+
+- [Install Pue JS](/docs/installation) in your project.
+- Ship your first emission with the [Quick Start](/docs/quick-start).
+- Understand the runtime in [Architecture](/docs/concepts).

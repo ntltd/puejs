@@ -1,0 +1,64 @@
+export const metadata = {
+  title: "Manifesto",
+  description: "The principles behind Pue JS.",
+};
+
+# The Acoustic Web Manifesto
+
+For thirty years, the web has been a silent medium. We have refined its typography, its motion, its haptics, its colour spaces. We have shipped design systems, animation libraries and rendering engines. Yet the most fundamental interaction of all — the scroll — remains mute.
+
+We believe this is a failure of imagination, not of technology.
+
+The platform has been ready for a decade. `AudioWorklet` gives us a real-time audio thread. `ConvolverNode` gives us physical spaces. Passive listeners give us motion without cost. What has been missing is not capability, but conviction.
+
+Pue JS is that conviction, expressed as a library. These are the principles it is built on.
+
+## I. Feedback is a contract
+
+Every interaction is a question the user asks of the interface. Visual feedback answers it partially. Acoustic feedback completes the answer. An interface that moves without sound is an interface that only half-responds.
+
+We hold that a scroll should be **acknowledged**, and that the acknowledgement should be proportional to the gesture that produced it.
+
+## II. Organic over synthetic
+
+The notification chime, the click, the swoosh: the vocabulary of interface sound has been dominated by artificial tones that no human body has ever produced. They are recognised, but never felt.
+
+We choose the organic. Emissions that carry warmth, texture and imperfection. Sounds that are immediately, universally understood — across cultures, languages and generations — without a single line of onboarding.
+
+## III. The main thread is sacred
+
+No acoustic experience justifies a dropped frame. Sampling happens once per frame. Synthesis happens on the audio thread. Scroll listeners are passive, always.
+
+If Pue JS ever degrades your Interaction to Next Paint, it is a bug, and we will treat it with the severity of one.
+
+## IV. Every byte must justify itself
+
+The core runtime weighs 1.4 kB. It ships no audio files. It has no dependencies. Every odor, every room and every adapter is an isolated module that only exists in your bundle if you import it.
+
+Abundance of expression must never become abundance of payload.
+
+## V. Determinism is respect
+
+The same gesture must always produce the same emission. Engineers deserve to snapshot-test their acoustic layer. Designers deserve to know exactly what their users will hear. Users deserve consistency.
+
+Randomness, where it exists — in pitch variation, for instance — is seeded, bounded and documented.
+
+## VI. Consent before emission
+
+Sound is intimate. It enters a room, an open office, a train carriage. It cannot be ignored the way an image can.
+
+Pue JS therefore never emits before an explicit gesture. It honours `prefers-reduced-motion` by default. It falls silent the instant a tab is hidden. It ships with the documentation required to build a proper control, and we expect every integration to provide one.
+
+An acoustic web that is imposed is not a better web. An acoustic web that is chosen is.
+
+## VII. Seriousness of purpose
+
+There will be those who smile at this project. We understand. Every new interaction paradigm has been met with the same reaction — scroll-jacking, parallax, dark mode, haptics.
+
+We do not ask to be taken seriously. We ask to be measured: by our latency, our bundle size, our test coverage and our accessibility guarantees. We are confident in the results.
+
+---
+
+The web has learned to look. It is time it learned to resonate.
+
+**— The Pue JS Core Team**

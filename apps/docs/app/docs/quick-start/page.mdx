@@ -1,0 +1,83 @@
+export const metadata = {
+  title: "Quick Start",
+  description: "Ship your first acoustic scroll event in under five minutes.",
+};
+
+# Quick Start
+
+This guide takes you from installation to a production-ready acoustic scroll integration in five steps.
+
+## 1. Install the package
+
+```bash
+npm install puejs
+```
+
+## 2. Create an emitter
+
+An emitter binds an acoustic profile to a scroll container. Pass `window` to observe the document, or any scrollable element.
+
+```ts
+import { createEmitter, presets } from "puejs";
+
+const emitter = createEmitter(window, {
+  preset: presets.organic,
+});
+```
+
+At this point the emitter is in the `idle` state. It observes nothing and produces no sound.
+
+## 3. Start on a user gesture
+
+Browsers only allow audio playback after a user interaction. Call `start()` from a gesture handler — a click on a dedicated control is the recommended pattern.
+
+```ts
+const toggle = document.querySelector<HTMLButtonElement>("#acoustic-feedback");
+
+toggle?.addEventListener("click", async () => {
+  await emitter.start();
+  toggle.setAttribute("aria-pressed", "true");
+});
+```
+
+Once started, every scroll above the velocity threshold triggers an emission.
+
+<Callout type="warning" title="Autoplay policy">
+  Calling `start()` outside of a user gesture leaves the emitter in the `suspended` state. By default, `autoUnlock`
+  resumes it on the next qualifying interaction. See [Accessibility & Consent](/docs/accessibility).
+</Callout>
+
+## 4. Tune the acoustic profile
+
+Presets are a starting point. Every parameter can be overridden, and the result is fully type-checked.
+
+```ts
+const emitter = createEmitter(window, {
+  preset: presets.organic,
+  pitch: { min: 0.82, max: 1.24 },
+  resonance: 0.65,
+  duration: 420,
+  reverb: { room: "cathedral", decay: 2.4 },
+  throttle: "velocity",
+});
+```
+
+Options can also be changed at runtime without recreating the emitter:
+
+```ts
+emitter.update({ resonance: 0.4, reverb: false });
+```
+
+## 5. Clean up
+
+Emitters hold an `AudioContext` and a scroll listener. Release them when the view unmounts.
+
+```ts
+emitter.destroy();
+```
+
+## What's next
+
+- Learn how emissions are produced in [Architecture](/docs/concepts).
+- Use the official [framework adapters](/docs/ecosystem) to skip the lifecycle boilerplate.
+- Browse every option in the [API Reference](/docs/api).

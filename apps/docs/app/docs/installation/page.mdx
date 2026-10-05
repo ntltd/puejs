@@ -1,0 +1,71 @@
+export const metadata = {
+  title: "Installation",
+  description: "Install Pue JS with your package manager of choice.",
+};
+
+# Installation
+
+Pue JS is distributed as a single ESM package with bundled type definitions. It has no runtime dependencies.
+
+## Package managers
+
+```bash
+npm install puejs
+```
+
+```bash
+pnpm add puejs
+```
+
+```bash
+yarn add puejs
+```
+
+```bash
+bun add puejs
+```
+
+## Without a bundler
+
+Pue JS can be loaded directly in the browser as a native ES module:
+
+```html
+<script type="module">
+  import { createEmitter } from "https://cdn.jsdelivr.net/npm/puejs/+esm";
+
+  const emitter = createEmitter(window);
+  document.addEventListener("pointerdown", () => emitter.start(), { once: true });
+</script>
+```
+
+## Requirements
+
+| Requirement   | Detail                                              |
+| ------------- | --------------------------------------------------- |
+| Runtime       | ES2020, `AudioWorklet`, secure context              |
+| TypeScript    | 5.0 or later (optional, types are bundled)          |
+| Module format | ESM only                                            |
+| Side effects  | None — the package is marked `"sideEffects": false` |
+
+## Entry points
+
+The package exposes several entry points so that each application only bundles the modules it uses:
+
+| Import path    | Contents                                            |
+| -------------- | --------------------------------------------------- |
+| `puejs`        | Core runtime: `createEmitter`, `presets`, utilities |
+| `puejs/odors`  | Individual synthesis modules, tree-shakable         |
+| `puejs/rooms`  | Impulse response descriptors for reverberation      |
+| `puejs/react`  | React adapter — see [Ecosystem](/docs/ecosystem)    |
+| `puejs/vue`    | Vue adapter                                         |
+| `puejs/svelte` | Svelte adapter                                      |
+| `puejs/solid`  | Solid adapter                                       |
+
+## Server-side rendering
+
+Importing Pue JS on the server is safe: the package performs no work at import time. On the server, `createEmitter` returns an inert emitter whose methods are no-ops. In frameworks that distinguish client and server components, such as the Next.js App Router, instantiate emitters inside a client component.
+
+<Callout type="note" title="Content Security Policy">
+  The synthesis engine is loaded as an `AudioWorklet` module from a `blob:` URL. If your application enforces a strict
+  CSP, add `blob:` to `worker-src`, or self-host the worklet with the [`workletUrl`](/docs/api#emitteroptions) option.
+</Callout>

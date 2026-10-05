@@ -1,0 +1,241 @@
+export const metadata = {
+  title: "RFC 0001: Web Olfactory API",
+  description: "A proposal for a permission-gated browser API to drive olfactory output devices.",
+};
+
+# Web Olfactory API
+
+| Field      | Value                                                    |
+| ---------- | -------------------------------------------------------- |
+| RFC        | 0001                                                     |
+| Status     | Draft — open for comments                                |
+| Authors    | Pue JS Core Team                                         |
+| Created    | 2026-10-05                                               |
+| Target     | Incubation in the Web Platform Incubator Community Group |
+| Discussion | [GitHub](https://github.com/ntltd/puejs)                 |
+
+## Summary
+
+This document proposes the **Web Olfactory API**, a permission-gated interface that allows web applications to drive olfactory output devices — hardware that releases controlled quantities of scent — through a standardized, privacy-preserving abstraction.
+
+The API follows the device-access model established by WebHID, Web Bluetooth and WebUSB, and integrates with the Web Audio clock so that olfactory output can be scheduled with the same precision as acoustic output.
+
+Pue JS has spent its first major version proving that scroll interactions can carry meaningful acoustic feedback. This RFC addresses the next modality.
+
+## Motivation
+
+The web platform exposes four of the five human senses to developers. Sight is served by HTML, CSS, Canvas and WebGPU. Hearing by Web Audio. Touch by the Vibration API and the Gamepad haptics extensions. Balance and orientation, to a degree, by WebXR.
+
+Smell remains entirely outside the platform, despite three converging trends:
+
+- **Consumer hardware exists.** Scent diffusers with discrete, addressable cartridges are commercially available, and several VR headset accessories already release scent in sync with content.
+- **Every vendor reinvents the protocol.** Each device ships a proprietary SDK, typically native-only. Web applications that want olfactory output must ask users to install companion software, which is a security and usability regression.
+- **Low-level access is the wrong layer.** Developers can already reach some of these devices through WebHID or Web Bluetooth. Doing so means re-implementing vendor protocols in JavaScript, and gives pages unrestricted control over hardware that releases chemicals into a physical room.
+
+A dedicated API lets user agents enforce the safety, consent and rate-limiting guarantees that raw device access cannot.
+
+## Goals
+
+- Provide a vendor-neutral way to discover, connect to and drive olfactory output devices.
+- Express scent intent through a **portable vocabulary**, so that one description produces a recognizable result on different hardware.
+- Schedule emissions against a shared high-resolution clock, including `AudioContext.currentTime`.
+- Make physical safety a property of the user agent, not of each application.
+- Require explicit, revocable user consent for every origin.
+
+## Non-goals
+
+- **Olfactory input.** Electronic noses and gas sensors raise distinct privacy concerns and are out of scope.
+- **Chemical formulation.** The API never exposes raw compounds or concentrations. It addresses cartridges a device already contains.
+- **Background emission.** Pages cannot emit from a hidden document, a service worker or a background tab.
+- **Guaranteeing perception.** Olfactory perception varies widely between individuals. The API describes intent, not experience.
+
+## Proposed API
+
+### Overview
+
+```ts
+const device = await navigator.olfaction.requestDevice();
+
+await device.emit({
+  notes: [
+    { family: "citrus", weight: 0.7 },
+    { family: "green", weight: 0.3 },
+  ],
+  intensity: 0.4,
+  duration: 1200,
+});
+```
+
+`requestDevice()` must be called during a user activation and shows a browser-controlled device chooser, in the same way as `navigator.hid.requestDevice()`. Previously granted devices are returned by `getDevices()` without a prompt.
+
+### WebIDL
+
+```webidl
+[Exposed=Window, SecureContext]
+partial interface Navigator {
+  [SameObject] readonly attribute Olfaction olfaction;
+};
+
+[Exposed=Window, SecureContext]
+interface Olfaction : EventTarget {
+  Promise<OlfactoryDevice> requestDevice(optional OlfactoryRequestOptions options = {});
+  Promise<sequence<OlfactoryDevice>> getDevices();
+  attribute EventHandler onconnect;
+  attribute EventHandler ondisconnect;
+};
+
+[Exposed=Window, SecureContext]
+interface OlfactoryDevice : EventTarget {
+  readonly attribute DOMString name;
+  readonly attribute FrozenArray<OlfactoryNoteFamily> families;
+  readonly attribute double clearanceTime;
+  Promise<OlfactoryEmission> emit(OlfactoryEmissionOptions options);
+  undefined stop();
+  Promise<undefined> forget();
+};
+
+dictionary OlfactoryEmissionOptions {
+  required sequence<OlfactoryNote> notes;
+  double intensity = 0.5;
+  unsigned long duration = 1000;
+  unsigned long attack = 150;
+  unsigned long release = 400;
+  double when;
+  AudioContext audioContext;
+};
+
+[Exposed=Window, SecureContext]
+interface OlfactoryEmission {
+  readonly attribute double fidelity;
+  readonly attribute Promise<undefined> released;
+  readonly attribute Promise<undefined> cleared;
+  undefined cancel();
+};
+
+dictionary OlfactoryNote {
+  required OlfactoryNoteFamily family;
+  double weight = 1.0;
+};
+
+enum OlfactoryNoteFamily {
+  "citrus", "floral", "fruity", "green", "herbal", "woody",
+  "resinous", "spicy", "smoky", "earthy", "marine", "gourmand", "sulfurous"
+};
+```
+
+### The note vocabulary
+
+Devices contain different cartridges, and two devices rarely share the same set. Rather than addressing cartridges directly, applications describe a blend of **note families**. The user agent maps the requested blend onto the cartridges available on the connected device, using a mapping the device declares during pairing.
+
+The thirteen families are deliberately coarse. They are derived from the classification systems used in perfumery and food science, and are chosen so that each family is both **distinguishable** by a typical user and **producible** by current hardware.
+
+Families a device cannot produce are listed as absent from `device.families`. Requesting them is not an error: their weight is redistributed across the remaining notes, and the resulting emission reports a `fidelity` score between `0` and `1`.
+
+### Scheduling
+
+Olfactory output has high latency: scent takes hundreds of milliseconds to travel from the device to the user. To keep multimodal content coherent, emissions can be scheduled ahead of time.
+
+By default, `when` is a `DOMHighResTimeStamp` on the `performance.now()` timeline. When `audioContext` is provided, `when` is instead interpreted in seconds, in that context's time coordinate system, so that olfactory and acoustic events share a single clock:
+
+```ts
+const context = new AudioContext();
+
+device.emit({
+  notes: [{ family: "smoky", weight: 1 }],
+  intensity: 0.3,
+  when: context.currentTime + 0.25,
+  audioContext: context,
+});
+```
+
+User agents are expected to compensate for the propagation delay declared by the device, so that the emission is perceived — rather than released — at the requested time. The returned `OlfactoryEmission` exposes two promises: `released` settles when the device stops releasing scent, and `cleared` once the device's clearance time has elapsed.
+
+### Clearance
+
+Sound stops when the signal stops. Scent does not. Every device reports a `clearanceTime`: the estimated time, in milliseconds, for an emission to dissipate below the perception threshold under typical ventilation.
+
+User agents use this value to enforce a **clearance budget**. A new emission is rejected with a `NotAllowedError` if accumulated intensity over the clearance window would exceed the user's configured ceiling. This prevents saturation of the physical environment, which cannot be undone by closing a tab.
+
+### Feature detection
+
+```ts
+if ("olfaction" in navigator) {
+  const [device] = await navigator.olfaction.getDevices();
+}
+```
+
+```css
+@media (olfaction: available) {
+  .scent-toggle {
+    display: inline-flex;
+  }
+}
+```
+
+## Integration with Pue JS
+
+Pue JS will ship experimental support behind the `puejs/olfactory` entry point once a browser exposes the API behind a flag. The adapter maps each acoustic emission's tonnage to olfactory intensity, and its odor to a default note blend:
+
+```ts
+import { createEmitter } from "puejs";
+import { withOlfaction } from "puejs/olfactory";
+
+const emitter = withOlfaction(createEmitter(window), {
+  notes: [
+    { family: "sulfurous", weight: 0.8 },
+    { family: "earthy", weight: 0.2 },
+  ],
+  intensityScale: 0.25,
+});
+```
+
+Synchronization reuses the emitter's `AudioContext`, so that acoustic and olfactory feedback reach the user together.
+
+## Security and privacy considerations
+
+### Permission model
+
+- Access requires a **secure context** and **transient user activation** for `requestDevice()`.
+- Grants are scoped to an origin and a device, and are revocable from browser settings.
+- A new Permissions Policy feature, `olfaction`, is **disabled by default in cross-origin iframes**. Embedded content must be explicitly delegated with `allow="olfaction"`.
+
+### Fingerprinting
+
+The device list, the set of supported families and the clearance time are only exposed after a grant. Before a grant, `getDevices()` resolves with an empty list, and the `olfaction` media feature matches whenever the API is implemented, regardless of connected hardware.
+
+### Physical safety
+
+Unlike every other output API, olfactory output affects people who have not consented: anyone sharing the room. User agents must therefore:
+
+- cap intensity at a user-configurable ceiling, defaulting to a conservative level;
+- enforce the clearance budget described above;
+- stop all emissions when the document becomes hidden, is frozen or is unloaded;
+- display a persistent indicator while an origin has an active device connection, comparable to the camera and microphone indicators.
+
+### Health
+
+Some note families include compounds associated with sensitivities and allergic reactions. Device manufacturers are expected to declare compliant cartridges, and user agents should allow users to **exclude individual families** globally. Excluded families are reported as absent from `device.families`, which is indistinguishable from missing hardware support.
+
+## Accessibility considerations
+
+Olfactory output must never be the sole channel for information. Scent perception varies with age, health and environment, and an estimated several percent of the population lives with partial or total anosmia. Content using this API should treat it the way well-designed content treats sound: as reinforcement of information conveyed by other means.
+
+## Alternatives considered
+
+**Raw device access through WebHID.** Already possible, but leaves safety, rate limiting and consent to each application. Rejected as the primary path; it remains available for vendor tooling.
+
+**A declarative attribute.** An HTML attribute such as `scent="citrus"` was considered for simple use cases. Declarative emission makes user activation and clearance budgeting difficult to reason about, and was deferred to a possible future extension.
+
+**Extending Web Audio.** Modeling scent as an `AudioNode` would provide scheduling for free, but conflates two modalities with very different physical properties — most notably the absence of a "stop" in olfaction. The API instead _borrows_ the Web Audio clock without inheriting its graph model.
+
+## Open questions
+
+1. Should the note vocabulary be versioned independently of the API, so that families can be added without a new specification level?
+2. What is an appropriate default intensity ceiling, and should it adapt to the ventilation profile a device reports?
+3. Should `emit()` reject, or silently clamp, when a request exceeds the clearance budget?
+4. Is a persistent indicator sufficient, or should every emission be accompanied by a transient visual notice?
+5. How should the API behave in shared-device contexts, such as kiosks and in-vehicle displays?
+
+## Feedback
+
+This RFC is a draft. Comments, objections and implementation experience are welcome on [GitHub](https://github.com/ntltd/puejs). Feedback received before the end of the comment period will be incorporated into the explainer submitted for incubation.

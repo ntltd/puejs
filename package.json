@@ -1,19 +1,24 @@
 {
+  "name": "puejs",
   "private": true,
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "eslint": "^8.49.0",
-    "prettier": "^3.0.3",
+    "eslint": "^9.39.5",
+    "prettier": "^3.9.9",
     "tsconfig": "*",
-    "turbo": "latest"
+    "turbo": "^2.11.7",
+    "typescript": "^6.0.3"
   },
-  "name": "puejs",
-  "packageManager": "yarn@1.22.19",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "yarn@1.22.22",
   "workspaces": [
     "apps/*",
     "packages/*"

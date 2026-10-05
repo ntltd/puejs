@@ -1,0 +1,296 @@
+export const metadata = {
+  title: "API Reference",
+  description: "Complete reference of the Pue JS public API.",
+};
+
+# API Reference
+
+This page documents every public export of Pue JS. All signatures are written in TypeScript; the same API is available from plain JavaScript.
+
+## Core
+
+### `createEmitter()`
+
+Creates an emitter bound to a scroll container.
+
+```ts
+function createEmitter(target: Window | Element, options?: EmitterOptions): Emitter;
+```
+
+| Parameter | Type                | Description                                              |
+| --------- | ------------------- | -------------------------------------------------------- |
+| `target`  | `Window \| Element` | The scroll container to observe.                         |
+| `options` | `EmitterOptions`    | Optional configuration. Merged over the selected preset. |
+
+Returns an [`Emitter`](#emitter) in the `idle` state. In environments without `AudioWorklet` support, or on the server, the returned emitter is inert: its methods resolve immediately and it never emits.
+
+```ts
+import { createEmitter } from "puejs";
+
+const emitter = createEmitter(document.querySelector("#feed")!, { preset: "crisp" });
+```
+
+### `EmitterOptions`
+
+| Option                 | Type                                 | Default                  | Description                                                                  |
+| ---------------------- | ------------------------------------ | ------------------------ | ---------------------------------------------------------------------------- |
+| `preset`               | `PresetName \| AcousticProfile`      | `"organic"`              | Base acoustic profile. Other options are merged over it.                     |
+| `odors`                | `Odor[]`                             | preset odors             | Synthesis modules available to the emitter. See [odors](#odors).             |
+| `pitch`                | `number \| PitchRange`               | `{ min: 0.9, max: 1.1 }` | Playback rate multiplier. A range is sampled randomly per emission.          |
+| `resonance`            | `number`                             | `0.4`                    | Body resonance, from `0` (dry) to `1` (fully resonant).                      |
+| `duration`             | `number`                             | `320`                    | Nominal emission duration in milliseconds, before tonnage scaling.           |
+| `volume`               | `number`                             | `0.8`                    | Master gain, from `0` to `1`.                                                |
+| `tonnage`              | `TonnageCurveName \| TonnageCurve`   | `"logarithmic"`          | Maps velocity to tonnage. See [`defineTonnageCurve()`](#definetonnagecurve). |
+| `threshold`            | `number`                             | `80`                     | Minimum velocity, in px/s, required to trigger an emission.                  |
+| `throttle`             | `"velocity" \| "distance" \| number` | `"velocity"`             | Emission rate strategy, or a fixed minimum interval in milliseconds.         |
+| `reverb`               | `ReverbOptions \| false`             | `{ room: "studio" }`     | Room simulation. `false` bypasses the convolver.                             |
+| `respectReducedMotion` | `boolean`                            | `true`                   | Stay silent when the user prefers reduced motion.                            |
+| `autoUnlock`           | `boolean`                            | `true`                   | Resume a suspended emitter on the next user gesture.                         |
+| `audioContext`         | `AudioContext`                       | private context          | Share an existing context between emitters.                                  |
+| `workletUrl`           | `string`                             | inline `blob:`           | Self-hosted URL of the synthesis worklet, for strict CSP environments.       |
+
+## Emitter
+
+The object returned by `createEmitter()`.
+
+```ts
+interface Emitter {
+  readonly state: EmitterState;
+  readonly context: AudioContext | null;
+  readonly options: Readonly<ResolvedEmitterOptions>;
+
+  start(): Promise<void>;
+  stop(): void;
+  update(options: Partial<EmitterOptions>): void;
+  emit(input?: EmissionInput): void;
+  on<E extends keyof EmitterEvents>(event: E, handler: (payload: EmitterEvents[E]) => void): () => void;
+  off<E extends keyof EmitterEvents>(event: E, handler: (payload: EmitterEvents[E]) => void): void;
+  destroy(): void;
+}
+```
+
+### Properties
+
+| Property  | Type                               | Description                                                     |
+| --------- | ---------------------------------- | --------------------------------------------------------------- |
+| `state`   | `EmitterState`                     | Current lifecycle state.                                        |
+| `context` | `AudioContext \| null`             | The underlying audio context. `null` until the first `start()`. |
+| `options` | `Readonly<ResolvedEmitterOptions>` | Fully resolved options, after preset merging and defaults.      |
+
+### `start()`
+
+Begins observing the scroll container and resumes the audio context. Resolves once the emitter is `running`, or `suspended` if no user gesture is available. Calling `start()` on a running emitter is a no-op.
+
+### `stop()`
+
+Stops observing and suspends the audio context. The emitter returns to `idle` and can be started again. In-flight emissions are allowed to finish.
+
+### `update()`
+
+Merges new options into the emitter without interrupting observation. Changing `audioContext` or `workletUrl` after the first `start()` throws `E_INVALID_OPTION`.
+
+```ts
+emitter.update({ reverb: { room: "atrium", mix: 0.3 } });
+```
+
+### `emit()`
+
+Triggers an emission manually, independently of scroll. Useful for previews, settings screens and tests.
+
+```ts
+emitter.emit({ tonnage: 0.75 });
+```
+
+| Field     | Type     | Default | Description                                           |
+| --------- | -------- | ------- | ----------------------------------------------------- |
+| `tonnage` | `number` | `0.5`   | Intensity of the emission, from `0` to `1`.           |
+| `odor`    | `Odor`   | auto    | Force a specific odor instead of automatic selection. |
+
+### `on()` and `off()`
+
+Subscribes to and unsubscribes from emitter events. `on()` returns an unsubscribe function.
+
+```ts
+const unsubscribe = emitter.on("emit", ({ tonnage, latency }) => {
+  console.debug(`emission · tonnage=${tonnage.toFixed(2)} · ${latency.toFixed(2)}ms`);
+});
+```
+
+### `destroy()`
+
+Removes every listener, disconnects every audio node and closes the private audio context, if any. The emitter enters the `destroyed` state; any subsequent method call throws `E_DESTROYED`.
+
+## Events
+
+```ts
+interface EmitterEvents {
+  emit: EmissionEvent;
+  statechange: { previous: EmitterState; current: EmitterState };
+  unlock: { context: AudioContext };
+  error: PueError;
+}
+```
+
+### `EmissionEvent`
+
+Dispatched after each emission has been scheduled on the audio thread.
+
+| Field       | Type      | Description                                               |
+| ----------- | --------- | --------------------------------------------------------- |
+| `tonnage`   | `number`  | Computed tonnage, from `0` to `1`.                        |
+| `velocity`  | `number`  | Smoothed scroll velocity at trigger time, in px/s.        |
+| `direction` | `1 \| -1` | `1` when scrolling forward, `-1` when scrolling backward. |
+| `pitch`     | `number`  | Effective playback rate multiplier.                       |
+| `odor`      | `string`  | Name of the odor that produced the emission.              |
+| `latency`   | `number`  | Time from frame detection to audio scheduling, in ms.     |
+| `timestamp` | `number`  | `AudioContext.currentTime` at which the emission starts.  |
+
+## Presets
+
+```ts
+const presets: Record<PresetName, AcousticProfile>;
+```
+
+| Name       | Pitch       | Resonance | Duration | Odors                     | Room       |
+| ---------- | ----------- | --------- | -------- | ------------------------- | ---------- |
+| `organic`  | 0.90 – 1.10 | 0.40      | 320 ms   | `staccato`, `sustained`   | `studio`   |
+| `crisp`    | 1.10 – 1.35 | 0.20      | 180 ms   | `staccato`                | `anechoic` |
+| `deep`     | 0.60 – 0.80 | 0.70      | 620 ms   | `sustained`, `infrasonic` | `atrium`   |
+| `discreet` | 0.95 – 1.05 | 0.25      | 220 ms   | `staccato`                | `studio`   |
+
+Presets are frozen objects. Spread them to derive your own:
+
+```ts
+import { presets, type AcousticProfile } from "puejs";
+
+export const brand: AcousticProfile = { ...presets.organic, resonance: 0.55, duration: 360 };
+```
+
+## Tonnage curves
+
+### `defineTonnageCurve()`
+
+Declares a custom mapping from velocity to tonnage.
+
+```ts
+function defineTonnageCurve(curve: (velocity: number) => number): TonnageCurve;
+```
+
+The function receives the smoothed velocity in px/s and must return a value between `0` and `1`. Values outside this range are clamped. The function is called once per frame while the container is in motion: keep it pure and allocation-free.
+
+## Odors
+
+Odors are imported individually from `puejs/odors`:
+
+```ts
+import { infrasonic, staccato, sustained, tremolo } from "puejs/odors";
+```
+
+### `defineOdor()`
+
+Authors a custom synthesis module. The `synthesize` function runs inside the `AudioWorklet` and must be self-contained: it cannot reference variables from the enclosing scope.
+
+```ts
+import { defineOdor } from "puejs";
+
+export const resonant = defineOdor({
+  name: "resonant",
+  tonnage: [0.3, 1],
+  synthesize(output, { sampleRate, frequency, tonnage, resonance }) {
+    for (let i = 0; i < output.length; i++) {
+      const t = i / sampleRate;
+      const envelope = Math.exp(-t * (8 - resonance * 6));
+      output[i] = Math.sin(2 * Math.PI * frequency * t) * envelope * tonnage;
+    }
+  },
+});
+```
+
+| Field        | Type                                                      | Description                                                     |
+| ------------ | --------------------------------------------------------- | --------------------------------------------------------------- |
+| `name`       | `string`                                                  | Unique identifier, reported in `EmissionEvent.odor`.            |
+| `tonnage`    | `[min: number, max: number]`                              | Tonnage range for which the odor is eligible. Default `[0, 1]`. |
+| `synthesize` | `(output: Float32Array, params: SynthesisParams) => void` | Fills the output buffer with one emission.                      |
+
+## Utilities
+
+### `isSupported()`
+
+```ts
+function isSupported(): boolean;
+```
+
+Returns `true` when the current environment provides `AudioWorklet` in a secure context. Always `false` on the server.
+
+### `unlock()`
+
+```ts
+function unlock(context?: AudioContext): Promise<boolean>;
+```
+
+Resumes the given audio context — or every context created by Pue JS — from within a user gesture. Resolves with `true` if playback is now allowed. Useful when the gesture happens outside of the emitter's control, such as in a cookie consent dialog.
+
+## Types
+
+```ts
+type PresetName = "organic" | "crisp" | "deep" | "discreet";
+
+type RoomName = "anechoic" | "studio" | "atrium" | "cathedral";
+
+type EmitterState = "idle" | "suspended" | "running" | "destroyed";
+
+type TonnageCurveName = "linear" | "logarithmic" | "exponential";
+
+interface PitchRange {
+  min: number;
+  max: number;
+}
+
+interface ReverbOptions {
+  room: RoomName;
+  /** Multiplier applied to the impulse response tail. Default: 1 */
+  decay?: number;
+  /** Wet/dry ratio, from 0 to 1. Default: 0.25 */
+  mix?: number;
+}
+
+interface AcousticProfile {
+  pitch: number | PitchRange;
+  resonance: number;
+  duration: number;
+  odors: readonly Odor[];
+  tonnage: TonnageCurveName | TonnageCurve;
+  reverb: ReverbOptions | false;
+}
+```
+
+## Errors
+
+Every error thrown or dispatched by Pue JS is an instance of `PueError` with a stable `code`.
+
+```ts
+class PueError extends Error {
+  readonly code: PueErrorCode;
+}
+```
+
+| Code               | Thrown when                                                                         |
+| ------------------ | ----------------------------------------------------------------------------------- |
+| `E_DESTROYED`      | A method is called on a destroyed emitter.                                          |
+| `E_INVALID_OPTION` | An option is out of range, or immutable after `start()`.                            |
+| `E_WORKLET_LOAD`   | The synthesis worklet could not be loaded, usually because of a CSP.                |
+| `E_IMPULSE_FETCH`  | A room impulse response could not be fetched. The emitter falls back to dry output. |
+
+`E_WORKLET_LOAD` and `E_IMPULSE_FETCH` are dispatched through the `error` event rather than thrown, so that a failure to produce sound never breaks your application.
+
+## Adapters
+
+| Export        | Module         | Signature                                                                                      |
+| ------------- | -------------- | ---------------------------------------------------------------------------------------------- |
+| `usePue`      | `puejs/react`  | `<T extends Element>(options?: EmitterOptions \| false) => RefCallback<T>`                     |
+| `PueProvider` | `puejs/react`  | `(props: { defaults?: EmitterOptions; audioContext?: AudioContext; children }) => JSX.Element` |
+| `PuePlugin`   | `puejs/vue`    | Vue plugin. Accepts default `EmitterOptions`. Registers `v-pue`.                               |
+| `pue`         | `puejs/svelte` | `Action<HTMLElement, EmitterOptions \| undefined>`                                             |
+| `createPue`   | `puejs/solid`  | `<T extends Element>(options: Accessor<EmitterOptions \| false>) => (el: T) => void`           |
+
+See [Framework Adapters](/docs/ecosystem) for usage.

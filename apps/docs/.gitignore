@@ -32,3 +32,10 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# panda css
+styled-system
+styled-system-studio
+
+# typescript
+*.tsbuildinfo
