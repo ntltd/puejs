@@ -54,8 +54,15 @@ export function Select<T extends string>({ label, value, options, onChange }: Se
       <select
         className={css({
           height: "10",
-          px: "3",
+          pl: "3",
+          // Custom chevron: the native arrow ignores padding and sits against the border.
+          pr: "10",
+          appearance: "none",
           bg: "carbon",
+          bgImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5l3 3 3-3' stroke='%23A3A3A3' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")",
+          bgRepeat: "no-repeat",
+          bgPosition: "right 12px center",
           borderWidth: "1px",
           borderColor: "border",
           borderRadius: "md",
