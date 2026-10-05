@@ -6,6 +6,7 @@ import type { EmissionEvent, EmitterOptions } from "../src/types";
 import {
   FakeAudioContext,
   type FakeAudioContextOptions,
+  FakeElementTarget,
   FakeEnvironment,
   type FakeFilter,
   type FakeGain,
@@ -190,6 +191,26 @@ describe("emissions", () => {
     expect(env.pendingFrames).toBe(0);
   });
 
+  it("measures the distance throttle against the element's own height", async () => {
+    const env = new FakeEnvironment();
+    const target = new FakeElementTarget();
+    const emitter = createEmitterWithEnvironment(
+      target.asTarget(),
+      { odors: [quiet, loud], throttle: "distance" },
+      env,
+    );
+    const emissions: EmissionEvent[] = [];
+    emitter.on("emit", (emission) => emissions.push(emission));
+    await emitter.start();
+    for (let frame = 0; frame < 30; frame++) {
+      target.scrollTo(target.scrollTop + 32);
+      env.flushFrame(16);
+    }
+    // Half of the element's 200 px: an emission every 128 px with 32 px steps (7 in 960 px).
+    // Measured against the 800 px window instead, only 2 would fire.
+    expect(emissions.length).toBeGreaterThanOrEqual(6);
+  });
+
   it("applies a fixed throttle", async () => {
     const { env, target, emitter, emissions } = setup({ throttle: 1000 });
     await emitter.start();
@@ -261,6 +282,15 @@ describe("emissions", () => {
     env.hidden = true;
     scrollAtSpeed(env, target, 2000, 10);
     expect(emissions).toHaveLength(0);
+  });
+
+  it("plays a manually requested odor once it is decoded", async () => {
+    const extra = defineOdor({ name: "extra", src: dataUri("GOOD extra") });
+    const { emitter, emissions } = setup();
+    await emitter.start();
+    emitter.emit({ odor: extra });
+    await tick();
+    expect(emissions.at(-1)?.odor).toBe("extra");
   });
 
   it("emits manually", async () => {

@@ -47,6 +47,10 @@ export const settleWithin = (promise: Promise<unknown>, milliseconds: number): P
 export const readScrollPosition = (target: ScrollTarget): number =>
   "scrollY" in target ? target.scrollY : target.scrollTop;
 
+/** Visible height of the scroll container: the viewport for a window, the element's own height otherwise. */
+const containerHeight = (target: ScrollTarget, env: Environment): number =>
+  "scrollY" in target ? env.viewportHeight() : target.clientHeight;
+
 type Handler = (payload: unknown) => void;
 
 export function createEmitterWithEnvironment(
@@ -167,7 +171,7 @@ export function createEmitterWithEnvironment(
     const velocity = Math.abs(signedVelocity);
     if (velocity < resolved.threshold) return;
     const tonnage = computeTonnage(velocity, resolved.threshold, resolved.tonnage);
-    const frameInfo = { time: now, position, tonnage, viewportHeight: env.viewportHeight() };
+    const frameInfo = { time: now, position, tonnage, viewportHeight: containerHeight(target, env) };
     if (!canEmit(resolved.throttle, throttleState, frameInfo)) return;
     if (play(tonnage, velocity, signedVelocity < 0 ? -1 : 1, now)) {
       throttleState = { lastTime: now, lastPosition: position };
@@ -327,11 +331,16 @@ export function createEmitterWithEnvironment(
         throw new PueError("E_INVALID_OPTION", 'Invalid emission "odor": expected an odor.');
       }
       if (state !== "running") return;
-      if (input.odor && !buffers.has(input.odor)) {
-        void decode([input.odor]);
+      const { odor } = input;
+      if (odor && !buffers.has(odor)) {
+        // Decode first, then play if the emitter is still running.
+        const token = startToken;
+        void decode([odor]).then(() => {
+          if (token === startToken && state === "running") play(tonnage, 0, 1, env.now(), odor);
+        });
         return;
       }
-      play(tonnage, 0, 1, env.now(), input.odor);
+      play(tonnage, 0, 1, env.now(), odor);
     },
 
     on<E extends keyof EmitterEvents>(event: E, handler: EmitterEventHandler<E>) {

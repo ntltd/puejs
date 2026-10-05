@@ -284,3 +284,27 @@ export function scrollAtSpeed(
     env.flushFrame(frameMs);
   }
 }
+
+/** A scrollable element: no scrollY, a scrollTop and its own visible height. */
+export class FakeElementTarget {
+  scrollTop = 0;
+  clientHeight = 200;
+  private listeners = new Set<() => void>();
+
+  addEventListener(type: string, listener: () => void): void {
+    if (type === "scroll") this.listeners.add(listener);
+  }
+
+  removeEventListener(_type: string, listener: () => void): void {
+    this.listeners.delete(listener);
+  }
+
+  scrollTo(position: number): void {
+    this.scrollTop = position;
+    for (const listener of [...this.listeners]) listener();
+  }
+
+  asTarget(): Element {
+    return this as unknown as Element;
+  }
+}
