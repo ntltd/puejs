@@ -1,5 +1,5 @@
 {
-  "name": "puejs",
+  "name": "@puejs/core",
   "version": "1.0.0",
   "description": "Next-generation acoustic feedback for modern web applications.",
   "license": "Unlicense",

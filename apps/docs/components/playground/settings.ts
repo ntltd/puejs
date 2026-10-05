@@ -1,5 +1,5 @@
-import { presets, type EmitterOptions, type Odor, type PresetName, type TonnageCurveName } from "puejs";
-import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "puejs/odors";
+import { presets, type EmitterOptions, type Odor, type PresetName, type TonnageCurveName } from "@puejs/core";
+import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "@puejs/core/odors";
 
 export const ODORS = {
   staccato,
@@ -111,8 +111,8 @@ export function generateCode(settings: Settings): string {
   if (settings.tonnage !== base.tonnage) lines.push(`  tonnage: "${settings.tonnage}",`);
 
   return [
-    `import { createEmitter } from "puejs";`,
-    ...(customOdors ? [`import { ${[...settings.odors].sort().join(", ")} } from "puejs/odors";`] : []),
+    `import { createEmitter } from "@puejs/core";`,
+    ...(customOdors ? [`import { ${[...settings.odors].sort().join(", ")} } from "@puejs/core/odors";`] : []),
     ``,
     `const emitter = createEmitter(element, {`,
     ...lines,

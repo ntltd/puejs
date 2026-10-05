@@ -7,13 +7,13 @@ Documentation: [www.puejs.org](https://www.puejs.org)
 ## Install
 
 ```sh
-npm install puejs
+npm install @puejs/core
 ```
 
 ## Usage
 
 ```ts
-import { createEmitter } from "puejs";
+import { createEmitter } from "@puejs/core";
 
 const emitter = createEmitter(window, { preset: "organic" });
 
@@ -45,8 +45,8 @@ Scrolling above 80 px/s now triggers emissions whose pitch and gain follow the s
 Built-in samples are inlined, so there is nothing to host. Presets use `staccato` and `sustained`; `soprano`, `pesante`, `sforzando`, `fortissimo` and `cathedral` are opt-in and only bundled when imported:
 
 ```ts
-import { createEmitter } from "puejs";
-import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "puejs/odors";
+import { createEmitter } from "@puejs/core";
+import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "@puejs/core/odors";
 
 createEmitter(window, {
   odors: [staccato, sustained, soprano, pesante, sforzando, fortissimo, cathedral],
@@ -57,7 +57,7 @@ createEmitter(window, {
 Use your own samples with `defineOdor`:
 
 ```ts
-import { createEmitter, defineOdor } from "puejs";
+import { createEmitter, defineOdor } from "@puejs/core";
 
 const custom = defineOdor({ name: "custom", src: "/sounds/custom.mp3", tonnage: [0.3, 1] });
 createEmitter(window, { odors: [custom] });

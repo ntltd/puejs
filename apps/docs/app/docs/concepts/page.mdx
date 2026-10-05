@@ -60,7 +60,7 @@ Three built-in curves are provided — `"linear"`, `"logarithmic"` (default) and
 Custom curves are plain functions of the velocity:
 
 ```ts
-import { createEmitter, defineTonnageCurve } from "puejs";
+import { createEmitter, defineTonnageCurve } from "@puejs/core";
 
 // Silent below 200 px/s, saturates at 3000 px/s
 const gated = defineTonnageCurve((velocity) => {
@@ -86,11 +86,11 @@ Options passed alongside `preset` are merged over it, so a preset can be refined
 
 ## Odors
 
-**Odors** are the samples an emitter plays. Built-in odors live in their own ES modules under `puejs/odors` and inline their audio, so there is nothing to host.
+**Odors** are the samples an emitter plays. Built-in odors live in their own ES modules under `@puejs/core/odors` and inline their audio, so there is nothing to host.
 
 ```ts
-import { createEmitter } from "puejs";
-import { staccato, sustained } from "puejs/odors";
+import { createEmitter } from "@puejs/core";
+import { staccato, sustained } from "@puejs/core/odors";
 
 createEmitter(window, { odors: [staccato, sustained] });
 ```
@@ -112,8 +112,8 @@ Every odor is trimmed and peak-normalized at build time, so emissions start soun
 `soprano`, `pesante`, `sforzando`, `fortissimo` and `cathedral` are expressive odors: they are not referenced by any preset, so they only reach your bundle when you import them.
 
 ```ts
-import { createEmitter } from "puejs";
-import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "puejs/odors";
+import { createEmitter } from "@puejs/core";
+import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "@puejs/core/odors";
 
 createEmitter(window, {
   odors: [staccato, sustained, soprano, pesante, sforzando, fortissimo, cathedral],

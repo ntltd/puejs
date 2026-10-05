@@ -9,7 +9,7 @@ This guide takes you from installation to a production-ready acoustic scroll int
 ## 1. Install the package
 
 ```bash
-npm install puejs
+npm install @puejs/core
 ```
 
 ## 2. Create an emitter
@@ -17,7 +17,7 @@ npm install puejs
 An emitter binds an acoustic profile to a scroll container. Pass `window` to observe the document, or any scrollable element.
 
 ```ts
-import { createEmitter, presets } from "puejs";
+import { createEmitter, presets } from "@puejs/core";
 
 const emitter = createEmitter(window, {
   preset: presets.organic,

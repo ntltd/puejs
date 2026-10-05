@@ -173,11 +173,11 @@ if ("olfaction" in navigator) {
 
 ## Integration with Pue JS
 
-Pue JS will ship experimental support behind the `puejs/olfactory` entry point once a browser exposes the API behind a flag. The adapter maps each acoustic emission's tonnage to olfactory intensity, and its odor to a default note blend:
+Pue JS will ship experimental support behind the `@puejs/olfactory` entry point once a browser exposes the API behind a flag. The adapter maps each acoustic emission's tonnage to olfactory intensity, and its odor to a default note blend:
 
 ```ts
-import { createEmitter } from "puejs";
-import { withOlfaction } from "puejs/olfactory";
+import { createEmitter } from "@puejs/core";
+import { withOlfaction } from "@puejs/olfactory";
 
 const emitter = withOlfaction(createEmitter(window), {
   notes: [

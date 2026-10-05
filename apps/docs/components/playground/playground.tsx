@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { createEmitter, type EmissionEvent, type Emitter, type EmitterState } from "puejs";
+import { createEmitter, type EmissionEvent, type Emitter, type EmitterState } from "@puejs/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { css, cx } from "styled-system/css";
 import { button } from "styled-system/recipes";
