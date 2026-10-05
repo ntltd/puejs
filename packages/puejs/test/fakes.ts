@@ -1,3 +1,5 @@
+import type { Environment } from "../src/environment";
+
 export class FakeParam {
   value = 0;
   events: Array<{ type: "set" | "ramp"; value: number; time: number }> = [];
@@ -136,3 +138,132 @@ export class FakeAudioContext {
 }
 
 export const dataUri = (text: string): string => `data:audio/mpeg;base64,${btoa(text)}`;
+
+export class FakeEnvironment implements Environment {
+  time = 0;
+  hidden = false;
+  reduced = false;
+  viewport = 800;
+  contextOptions: FakeAudioContextOptions = {};
+  contexts: FakeAudioContext[] = [];
+  errors: unknown[] = [];
+  private frames = new Map<number, () => void>();
+  private nextFrame = 1;
+  private reducedWatchers = new Set<(reduced: boolean) => void>();
+  private gestureListeners = new Set<() => void>();
+
+  createAudioContext(): AudioContext {
+    const context = new FakeAudioContext(this.contextOptions);
+    this.contexts.push(context);
+    return context.asAudioContext();
+  }
+
+  releaseAudioContext(context: AudioContext): void {
+    void context.close();
+  }
+
+  now(): number {
+    return this.time;
+  }
+
+  requestFrame(callback: () => void): number {
+    const handle = this.nextFrame++;
+    this.frames.set(handle, callback);
+    return handle;
+  }
+
+  cancelFrame(handle: number): void {
+    this.frames.delete(handle);
+  }
+
+  get pendingFrames(): number {
+    return this.frames.size;
+  }
+
+  /** Advances time, then runs the frame callbacks queued before this call. */
+  flushFrame(milliseconds = 16): void {
+    this.time += milliseconds;
+    const queued = [...this.frames.values()];
+    this.frames.clear();
+    for (const callback of queued) callback();
+  }
+
+  isHidden(): boolean {
+    return this.hidden;
+  }
+
+  viewportHeight(): number {
+    return this.viewport;
+  }
+
+  watchReducedMotion(onChange: (reduced: boolean) => void): { reduced: boolean; dispose(): void } {
+    this.reducedWatchers.add(onChange);
+    return { reduced: this.reduced, dispose: () => void this.reducedWatchers.delete(onChange) };
+  }
+
+  setReducedMotion(reduced: boolean): void {
+    this.reduced = reduced;
+    for (const watcher of this.reducedWatchers) watcher(reduced);
+  }
+
+  onUserGesture(callback: () => void): () => void {
+    this.gestureListeners.add(callback);
+    return () => void this.gestureListeners.delete(callback);
+  }
+
+  get gestureListenerCount(): number {
+    return this.gestureListeners.size;
+  }
+
+  gesture(): void {
+    for (const listener of [...this.gestureListeners]) listener();
+  }
+
+  fetchArrayBuffer(url: string): Promise<ArrayBuffer> {
+    return Promise.reject(new Error(`No fake response for ${url}`));
+  }
+
+  reportError(error: unknown): void {
+    this.errors.push(error);
+  }
+}
+
+export class FakeScrollTarget {
+  scrollY = 0;
+  private listeners = new Set<() => void>();
+
+  addEventListener(type: string, listener: () => void): void {
+    if (type === "scroll") this.listeners.add(listener);
+  }
+
+  removeEventListener(_type: string, listener: () => void): void {
+    this.listeners.delete(listener);
+  }
+
+  get listenerCount(): number {
+    return this.listeners.size;
+  }
+
+  scrollTo(position: number): void {
+    this.scrollY = position;
+    for (const listener of [...this.listeners]) listener();
+  }
+
+  asTarget(): Window {
+    return this as unknown as Window;
+  }
+}
+
+/** Scrolls at a constant speed, flushing one animation frame per step. */
+export function scrollAtSpeed(
+  env: FakeEnvironment,
+  target: FakeScrollTarget,
+  pxPerSecond: number,
+  frames: number,
+  frameMs = 16,
+): void {
+  for (let frame = 0; frame < frames; frame++) {
+    target.scrollTo(target.scrollY + (pxPerSecond * frameMs) / 1000);
+    env.flushFrame(frameMs);
+  }
+}
