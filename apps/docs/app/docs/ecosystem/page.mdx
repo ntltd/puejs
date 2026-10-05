@@ -4,39 +4,60 @@ export const metadata = pageMetadata("/docs/ecosystem");
 
 # Framework Adapters
 
-The core runtime is framework agnostic and works today with any framework: create the emitter in a client-side lifecycle hook and destroy it on cleanup.
+The core runtime is framework agnostic. React has an official adapter; with other frameworks, create the emitter in a client-side lifecycle hook and destroy it on cleanup.
 
 ## React
+
+`@puejs/react` binds an emitter to the component lifecycle. It supports React 18 and 19, Strict Mode and the Next.js App Router.
+
+```bash
+npm install @puejs/core @puejs/react
+```
 
 ```tsx
 "use client";
 
-import { createEmitter } from "@puejs/core";
-import { useEffect, useRef } from "react";
+import { usePue } from "@puejs/react";
 
 export function Feed({ children }: { children: React.ReactNode }): React.JSX.Element {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    const emitter = createEmitter(ref.current, { preset: "crisp" });
-    const start = (): void => void emitter.start();
-    window.addEventListener("pointerdown", start, { once: true });
-    return () => {
-      window.removeEventListener("pointerdown", start);
-      emitter.destroy();
-    };
-  }, []);
+  const { ref, state, start, stop } = usePue<HTMLDivElement>({ preset: "crisp" });
 
   return (
-    <div ref={ref} style={{ overflowY: "auto", height: "100vh" }}>
-      {children}
-    </div>
+    <>
+      <button aria-pressed={state === "running"} onClick={() => (state === "idle" ? start() : stop())} type="button">
+        Acoustic feedback
+      </button>
+      <div ref={ref} style={{ overflowY: "auto", height: "100vh" }}>
+        {children}
+      </div>
+    </>
   );
 }
 ```
 
-`destroy()` is idempotent, so the double cleanup of React Strict Mode is safe.
+The emitter is created on mount, updated when options change and destroyed on unmount. Without `ref`, the hook observes `window`; passing `false` instead of options disables it. Audio only starts through `start()` — or `usePue(options, { autoStart: true })`, which still waits for a user gesture.
+
+### Sharing defaults
+
+Wrap your application in `PueProvider` to share default options and a single `AudioContext` between every `usePue` call:
+
+```tsx
+import { PueProvider } from "@puejs/react";
+
+export default function RootLayout({ children }: { children: React.ReactNode }): React.JSX.Element {
+  return (
+    <html lang="en">
+      <body>
+        <PueProvider defaults={{ preset: "organic", volume: 0.6 }}>{children}</PueProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+<Callout type="note" title="Next.js App Router">
+  The adapter ships with a `"use client"` directive, so `PueProvider` can be rendered from a server component layout.
+</Callout>
 
 ## Vue
 
@@ -66,13 +87,13 @@ onBeforeUnmount(() => {
 
 ## Roadmap
 
-Official adapters are planned to remove this boilerplate:
+Official adapters remove this boilerplate:
 
-| Module          | Status  |
-| --------------- | ------- |
-| `@puejs/react`  | Planned |
-| `@puejs/vue`    | Planned |
-| `@puejs/svelte` | Planned |
-| `@puejs/solid`  | Planned |
+| Module          | Status    |
+| --------------- | --------- |
+| `@puejs/react`  | Available |
+| `@puejs/vue`    | Planned   |
+| `@puejs/svelte` | Planned   |
+| `@puejs/solid`  | Planned   |
 
 Follow progress on [GitHub](https://github.com/ntltd/puejs).

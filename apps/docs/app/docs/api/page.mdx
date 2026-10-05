@@ -250,3 +250,32 @@ class PueError extends Error {
 | `E_DESTROYED`      | A method is called on a destroyed emitter.                                                                                     |
 | `E_INVALID_OPTION` | An option is out of range, or immutable after `start()`.                                                                       |
 | `E_DECODE`         | An odor could not be fetched or decoded. Dispatched through the `error` event; the emitter keeps running with its other odors. |
+
+## React adapter
+
+Available from `@puejs/react`. See [Framework Adapters](/docs/ecosystem#react) for usage.
+
+### `usePue()`
+
+```ts
+function usePue<T extends Element = Element>(
+  options?: EmitterOptions | false,
+  config?: { autoStart?: boolean },
+): {
+  ref: (element: T | null) => void;
+  state: EmitterState;
+  start: () => Promise<void>;
+  stop: () => void;
+  emit: (input?: EmissionInput) => void;
+  emitter: Emitter | null;
+};
+```
+
+Options are compared by value: pitch ranges structurally, odor lists element by element, functions by identity — define custom tonnage curves outside the component. On the server and while disabled, `emitter` is `null`, `state` is `"idle"` and the methods are no-ops.
+
+### `PueProvider`
+
+| Prop           | Type             | Description                                                     |
+| -------------- | ---------------- | --------------------------------------------------------------- |
+| `defaults`     | `EmitterOptions` | Merged under the options of every `usePue` call in the subtree. |
+| `audioContext` | `AudioContext`   | Shared by every emitter in the subtree. Never closed.           |
