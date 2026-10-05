@@ -43,7 +43,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "encode-odors": "node scripts/encode-odors.ts",
-    "size": "node scripts/size.ts"
+    "size": "node scripts/size.ts",
+    "prepublishOnly": "tsdown"
   },
   "devDependencies": {
     "@types/node": "^24.19.1",

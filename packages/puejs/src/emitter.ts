@@ -25,6 +25,24 @@ export const MAX_VOICES = 6;
 export const IDLE_TIMEOUT = 150;
 /** Lead time applied to every emission to absorb scheduling jitter, in seconds. */
 export const SCHEDULE_AHEAD = 0.005;
+/** How long start() waits for a pending resume() before settling on "suspended", in milliseconds. */
+export const RESUME_GRACE = 100;
+
+/** Resolves when the promise settles or after the timeout, whichever comes first. Never rejects. */
+export const settleWithin = (promise: Promise<unknown>, milliseconds: number): Promise<void> =>
+  new Promise((resolve) => {
+    const timeout = setTimeout(resolve, milliseconds);
+    void promise.then(
+      () => {
+        clearTimeout(timeout);
+        resolve();
+      },
+      () => {
+        clearTimeout(timeout);
+        resolve();
+      },
+    );
+  });
 
 export const readScrollPosition = (target: ScrollTarget): number =>
   "scrollY" in target ? target.scrollY : target.scrollTop;
@@ -242,6 +260,11 @@ export function createEmitterWithEnvironment(
 
     start() {
       assertAlive();
+      if (state === "suspended" && context) {
+        // Called again from a gesture: resume synchronously to unlock audio.
+        void context.resume().catch(() => undefined);
+        return Promise.resolve();
+      }
       if (state !== "idle") return Promise.resolve();
       if (pendingStart) return pendingStart;
       const token = ++startToken;
@@ -251,10 +274,12 @@ export function createEmitterWithEnvironment(
       }
       const ctx = context;
       attach(ctx);
-      // Resume synchronously so that a call made from a user gesture unlocks audio. Never awaited:
-      // without activation, some browsers keep this promise pending until the next gesture.
-      void ctx.resume().catch(() => undefined);
+      // Resume synchronously so that a call made from a user gesture unlocks audio. Only awaited with a
+      // timeout: without activation, some browsers keep this promise pending until the next gesture.
+      const resumed = ctx.resume().catch(() => undefined);
       const promise: Promise<void> = decode(resolved.odors)
+        // Real devices switch to "running" asynchronously: give a pending resume a short grace period.
+        .then(() => (ctx.state === "running" ? undefined : settleWithin(resumed, RESUME_GRACE)))
         .then(() => {
           if (token !== startToken) return;
           if (ctx.state === "running") {

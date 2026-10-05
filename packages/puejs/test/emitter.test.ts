@@ -89,6 +89,27 @@ describe("lifecycle", () => {
     expect(emitter.state).toBe("suspended");
   });
 
+  it("resolves running when the device starts after decoding", async () => {
+    const { emitter } = setup({}, { state: "suspended", asyncResume: true });
+    const changes: string[] = [];
+    const unlocks: unknown[] = [];
+    emitter.on("statechange", ({ previous, current }) => changes.push(`${previous}->${current}`));
+    emitter.on("unlock", (event) => unlocks.push(event));
+    await emitter.start();
+    expect(emitter.state).toBe("running");
+    expect(changes).toEqual(["idle->running"]);
+    expect(unlocks).toHaveLength(0);
+  });
+
+  it("resumes audio when start() is called again while suspended", async () => {
+    const { emitter, context } = setup({ autoUnlock: false }, { state: "suspended", allowResume: false });
+    await emitter.start();
+    expect(emitter.state).toBe("suspended");
+    context().allowResume = true;
+    await emitter.start();
+    expect(emitter.state).toBe("running");
+  });
+
   it("does not arm the gesture listener without autoUnlock", async () => {
     const { env, emitter } = setup({ autoUnlock: false }, { state: "suspended", allowResume: false });
     await emitter.start();

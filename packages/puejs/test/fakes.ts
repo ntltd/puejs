@@ -69,6 +69,8 @@ export interface FakeAudioContextOptions {
   allowResume?: boolean;
   /** When true, resume() never settles, like Chrome without user activation. */
   hangResume?: boolean;
+  /** When true, resume() switches to running on a later macrotask, like real audio devices. */
+  asyncResume?: boolean;
 }
 
 export class FakeAudioContext {
@@ -79,12 +81,19 @@ export class FakeAudioContext {
   decodeCalls = 0;
   allowResume: boolean;
   hangResume: boolean;
+  asyncResume: boolean;
   private listeners = new Set<() => void>();
 
-  constructor({ state = "running", allowResume = true, hangResume = false }: FakeAudioContextOptions = {}) {
+  constructor({
+    state = "running",
+    allowResume = true,
+    hangResume = false,
+    asyncResume = false,
+  }: FakeAudioContextOptions = {}) {
     this.state = state;
     this.allowResume = allowResume;
     this.hangResume = hangResume;
+    this.asyncResume = asyncResume;
   }
 
   addEventListener(type: string, listener: () => void): void {
@@ -102,6 +111,14 @@ export class FakeAudioContext {
 
   resume(): Promise<void> {
     if (this.hangResume && !this.allowResume) return new Promise(() => {});
+    if (this.asyncResume && this.allowResume && this.state === "suspended") {
+      return new Promise((resolve) =>
+        setTimeout(() => {
+          this.setState("running");
+          resolve();
+        }, 20),
+      );
+    }
     if (this.allowResume && this.state === "suspended") this.setState("running");
     return Promise.resolve();
   }

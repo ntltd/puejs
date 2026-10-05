@@ -1,4 +1,4 @@
-import { createEmitterWithEnvironment, type ScrollTarget } from "./emitter";
+import { RESUME_GRACE, createEmitterWithEnvironment, settleWithin, type ScrollTarget } from "./emitter";
 import { browserEnvironment, isSupported, trackedContexts } from "./environment";
 import { createInertEmitter } from "./inert";
 import type { Emitter, EmitterOptions } from "./types";
@@ -13,7 +13,8 @@ export function createEmitter(target: ScrollTarget, options?: EmitterOptions): E
 /** Resumes the given context, or every context created by Pue JS, from within a user gesture. */
 export async function unlock(context?: AudioContext): Promise<boolean> {
   const contexts = context ? [context] : [...trackedContexts];
-  await Promise.all(contexts.map((item) => item.resume().catch(() => undefined)));
+  // Without user activation, some browsers keep resume() pending: never wait longer than the grace period.
+  await Promise.all(contexts.map((item) => settleWithin(item.resume(), RESUME_GRACE)));
   return contexts.length > 0 && contexts.every((item) => item.state === "running");
 }
 

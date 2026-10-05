@@ -54,6 +54,11 @@ describe("unlock", () => {
     await expect(unlock(context.asAudioContext())).resolves.toBe(false);
   });
 
+  it("does not hang when resume() never settles", async () => {
+    const context = new FakeAudioContext({ state: "suspended", allowResume: false, hangResume: true });
+    await expect(unlock(context.asAudioContext())).resolves.toBe(false);
+  });
+
   it("is false when there is nothing to unlock", async () => {
     await expect(unlock()).resolves.toBe(false);
   });
