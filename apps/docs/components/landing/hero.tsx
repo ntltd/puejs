@@ -4,6 +4,7 @@ import { css, cx } from "styled-system/css";
 import { button } from "styled-system/recipes";
 import { container } from "../site/container";
 import { GlyphFlat, GlyphSwirl } from "../site/glyphs";
+import { EmissionRipples } from "./emission-ripples";
 import { InstallCommand } from "./install-command";
 import { ArrowRightIcon } from "../site/icons";
 
@@ -169,6 +170,7 @@ export function Hero(): React.JSX.Element {
               style={{ animationDelay: delay }}
             />
           ))}
+          <EmissionRipples />
           <div
             aria-hidden="true"
             className={css({
@@ -297,11 +299,11 @@ export function Hero(): React.JSX.Element {
         >
           <div>
             <dt>bundle</dt>
-            <dd>1.4 kB gzip</dd>
+            <dd>7.7 kB gzip</dd>
           </div>
           <div>
-            <dt>latency p99</dt>
-            <dd>1.8 ms</dd>
+            <dt>scheduling</dt>
+            <dd>same frame</dd>
           </div>
           <div>
             <dt>dependencies</dt>

@@ -1,0 +1,4 @@
+{
+  "extends": "tsconfig/library.json",
+  "include": ["src", "test", "scripts", "tsdown.config.ts", "vitest.config.ts"]
+}

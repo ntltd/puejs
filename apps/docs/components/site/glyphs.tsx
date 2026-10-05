@@ -1,4 +1,4 @@
-type GlyphProps = { size?: number, className?: string };
+type GlyphProps = { size?: number; className?: string };
 
 /** Flat, wide glyph (poop-1). */
 export function GlyphFlat({ size = 18, className }: GlyphProps): React.JSX.Element {

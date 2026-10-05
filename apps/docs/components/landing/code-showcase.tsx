@@ -13,7 +13,6 @@ const options: EmitterOptions = {
   pitch: { min: 0.82, max: 1.24 },
   resonance: 0.65,
   duration: 420,
-  reverb: { room: "cathedral", decay: 2.4 },
   throttle: "velocity",
 };
 
@@ -30,7 +29,7 @@ const highlights = [
   },
   {
     title: "Framework agnostic",
-    body: "Bind to any scroll container. First-class adapters for React, Vue, Svelte and Solid.",
+    body: "Bind to any scroll container, from the window to a single panel. Works with every framework today.",
   },
   {
     title: "Observable",
@@ -57,7 +56,7 @@ export function CodeShowcase(): React.JSX.Element {
           <h2 className={sectionTitle}>One function. Total acoustic control.</h2>
           <p className={sectionLead}>
             Pue JS exposes a single, declarative entry point. Describe your acoustic profile once — pitch envelope,
-            resonance, duration — and the runtime handles scheduling, throttling and spatialization.
+            resonance, duration — and the runtime handles sampling, throttling and scheduling.
           </p>
 
           <ul className={css({ mt: "10", display: "flex", flexDirection: "column", gap: "6" })}>

@@ -34,15 +34,24 @@ createEmitter(window, {
 ```tsx
 "use client";
 
-import { usePue } from "puejs/react";
-import { useState } from "react";
+import { createEmitter, type Emitter } from "puejs";
+import { useEffect, useRef, useState } from "react";
 
 export function AcousticToggle(): React.JSX.Element {
   const [enabled, setEnabled] = useState(false);
-  usePue(enabled ? { preset: "discreet" } : false);
+  const emitter = useRef<Emitter | null>(null);
+
+  useEffect(() => () => emitter.current?.destroy(), []);
+
+  const toggle = (): void => {
+    emitter.current ??= createEmitter(window, { preset: "discreet" });
+    if (enabled) emitter.current.stop();
+    else void emitter.current.start(); // called from the click: audio is unlocked immediately
+    setEnabled(!enabled);
+  };
 
   return (
-    <button aria-pressed={enabled} onClick={() => setEnabled((value) => !value)} type="button">
+    <button aria-pressed={enabled} onClick={toggle} type="button">
       Acoustic feedback
     </button>
   );
@@ -51,7 +60,7 @@ export function AcousticToggle(): React.JSX.Element {
 
 ## Background tabs
 
-Emitters suspend automatically when the document becomes hidden and resume when it becomes visible again. No emission is ever produced for a tab the user is not looking at.
+Emitters never emit while the document is hidden. No emission is ever produced for a tab the user is not looking at.
 
 ## Screen readers
 

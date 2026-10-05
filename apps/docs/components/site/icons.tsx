@@ -34,3 +34,19 @@ export function CheckIcon({ size = 14 }: IconProps): React.JSX.Element {
     </svg>
   );
 }
+
+export function SoundIcon({ size = 16, muted = false }: IconProps & { muted?: boolean }): React.JSX.Element {
+  return (
+    <svg aria-hidden="true" fill="none" height={size} viewBox="0 0 16 16" width={size}>
+      <path d="M2 6h2.5L8 3v10L4.5 10H2V6Z" fill="currentColor" />
+      {muted ? (
+        <path d="M11 6l4 4M15 6l-4 4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
+      ) : (
+        <>
+          <path d="M10.5 5.5a3.5 3.5 0 0 1 0 5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
+          <path d="M12.5 3.5a6.5 6.5 0 0 1 0 9" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
+        </>
+      )}
+    </svg>
+  );
+}

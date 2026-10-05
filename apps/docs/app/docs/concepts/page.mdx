@@ -8,7 +8,7 @@ This page describes the Pue JS runtime from the moment a scroll event is observe
 
 ```ts
 // The emission pipeline, conceptually
-scroll → sample → kinematics → tonnage → odor → reverb → destination
+scroll → sample → kinematics → tonnage → odor → voice → destination
 ```
 
 ## Emitters
@@ -20,44 +20,44 @@ An **emitter** is the unit of composition in Pue JS. It owns:
 - a resolved acoustic profile,
 - a lifecycle state.
 
-Multiple emitters can coexist on a page — for instance, one per scrollable panel. When they share an `AudioContext`, their output is mixed by the browser at no additional cost.
+Multiple emitters can coexist on a page — for instance, one per scrollable panel. When they share an `AudioContext`, each odor is decoded once and their output is mixed by the browser.
 
 ### Lifecycle
 
-| State       | Meaning                                                                        |
-| ----------- | ------------------------------------------------------------------------------ |
-| `idle`      | Created, not observing. No audio resources are allocated.                      |
-| `suspended` | Observing, but the `AudioContext` is waiting for a user gesture.               |
-| `running`   | Observing and emitting.                                                        |
-| `destroyed` | All listeners and audio nodes released. Any further call throws `E_DESTROYED`. |
+| State       | Meaning                                                                    |
+| ----------- | -------------------------------------------------------------------------- |
+| `idle`      | Created or stopped. No listeners are attached.                             |
+| `suspended` | Observing, but the `AudioContext` is waiting for a user gesture.           |
+| `running`   | Observing and emitting.                                                    |
+| `destroyed` | All listeners and audio nodes released. Further calls throw `E_DESTROYED`. |
 
 Transitions are reported through the `statechange` event.
 
 ## Scroll sampling
 
-Pue JS never performs work inside the scroll event itself. A passive listener flags the container as dirty; the actual position is read once per animation frame. This guarantees that sampling cannot delay a frame and never forces a synchronous layout.
+Pue JS never performs work inside the scroll event itself. A passive listener flags the container as dirty; the position is read once per animation frame. The frame loop stops by itself 150 ms after the last movement.
 
 ### Velocity
 
-Instantaneous velocity is expressed in **pixels per second** and smoothed with a critically damped low-pass filter to remove trackpad jitter. Scrolls below the `threshold` (80 px/s by default) are considered incidental and produce no emission.
+Instantaneous velocity is expressed in **pixels per second** and smoothed with a low-pass filter to remove trackpad jitter. Scrolls below the `threshold` (80 px/s by default) are considered incidental and produce no emission. Frames without movement never emit.
 
 ### Throttling
 
 The `throttle` option controls how frequently emissions may be triggered:
 
-| Strategy     | Behaviour                                                                     |
-| ------------ | ----------------------------------------------------------------------------- |
-| `"velocity"` | The minimum interval shortens as velocity increases. Default and recommended. |
-| `"distance"` | One emission every `viewport height × 0.5` scrolled.                          |
-| `number`     | A fixed minimum interval, in milliseconds.                                    |
+| Strategy     | Behaviour                                                                         |
+| ------------ | --------------------------------------------------------------------------------- |
+| `"velocity"` | The minimum interval shortens from 260 ms to 60 ms as tonnage increases. Default. |
+| `"distance"` | One emission every half viewport height scrolled.                                 |
+| `number`     | A fixed minimum interval, in milliseconds.                                        |
 
 ## Tonnage
 
-**Tonnage** is the perceived intensity of an emission, normalized between `0` and `1`. It is derived from velocity through a **tonnage curve** and drives gain, spectral brightness and, to a lesser extent, duration.
+**Tonnage** is the perceived intensity of an emission, normalized between `0` and `1`. Velocity is first normalized between the threshold and 3000 px/s, then passed through a **tonnage curve**. Tonnage drives gain and odor selection.
 
 Three built-in curves are provided — `"linear"`, `"logarithmic"` (default) and `"exponential"`. The logarithmic curve matches the human perception of loudness and keeps slow reading discreet while preserving headroom for aggressive flicks.
 
-Custom curves are plain functions:
+Custom curves are plain functions of the velocity:
 
 ```ts
 import { createEmitter, defineTonnageCurve } from "puejs";
@@ -73,20 +73,20 @@ createEmitter(window, { tonnage: gated });
 
 ## Acoustic profiles
 
-An **acoustic profile** is the full set of parameters that shape an emission: pitch range, resonance, duration, odor selection and tonnage curve. The `presets` export provides four calibrated profiles:
+An **acoustic profile** is the full set of parameters that shape an emission: odors, pitch range, resonance, duration, volume and tonnage curve. The `presets` export provides four calibrated profiles:
 
 | Preset             | Character                                                  |
 | ------------------ | ---------------------------------------------------------- |
 | `presets.organic`  | Balanced, warm, moderate resonance. The default.           |
 | `presets.crisp`    | Short, bright transients for dense, content-heavy layouts. |
-| `presets.deep`     | Low pitch, long decay. Suited to immersive storytelling.   |
+| `presets.deep`     | Low pitch, long body. Suited to immersive storytelling.    |
 | `presets.discreet` | Reduced gain and duration for productivity interfaces.     |
 
 Options passed alongside `preset` are merged over it, so a preset can be refined without being redefined.
 
 ## Odors
 
-**Odors** are the synthesis modules that generate the raw emission. Each odor lives in its own ES module under `puejs/odors`, which allows bundlers to eliminate those you do not import.
+**Odors** are the samples an emitter plays. Built-in odors live in their own ES modules under `puejs/odors` and inline their audio, so there is nothing to host.
 
 ```ts
 import { createEmitter } from "puejs";
@@ -95,38 +95,41 @@ import { staccato, sustained } from "puejs/odors";
 createEmitter(window, { odors: [staccato, sustained] });
 ```
 
-When several odors are provided, the runtime selects one per emission based on tonnage: short, light odors for low tonnage, sustained ones for high tonnage.
+When several odors are available, the runtime selects one per emission based on tonnage. Where ranges overlap, the choice is drawn from the emitter's seeded random source.
 
-| Odor         | Size (gzip) | Profile                                       |
-| ------------ | ----------- | --------------------------------------------- |
-| `staccato`   | 0.3 kB      | Short, percussive. Low tonnage.               |
-| `sustained`  | 0.4 kB      | Long, stable body. Medium to high tonnage.    |
-| `tremolo`    | 0.5 kB      | Amplitude-modulated. Expressive.              |
-| `infrasonic` | 0.9 kB      | Sub-bass emphasis. Requires capable hardware. |
+| Odor         | Size (gzip) | Duration | Tonnage range | Profile                                             | In presets |
+| ------------ | ----------- | -------- | ------------- | --------------------------------------------------- | ---------- |
+| `staccato`   | 2.1 kB      | 0.31 s   | 0 – 0.6       | Short and dry.                                      | Yes        |
+| `sustained`  | 1.7 kB      | 0.21 s   | 0.4 – 1       | Rounder, with more body.                            | Yes        |
+| `soprano`    | 2.3 kB      | 0.37 s   | 0.3 – 0.8     | High-pitched, airy release.                         | No         |
+| `pesante`    | 4.6 kB      | 0.94 s   | 0.5 – 1       | Heavy and dense, with a viscous texture.            | No         |
+| `sforzando`  | 4.9 kB      | 1.01 s   | 0.7 – 1       | Sudden, hard accent.                                | No         |
+| `fortissimo` | 10.9 kB     | 2.52 s   | 0.85 – 1      | Long and powerful. Reserved for the fastest flicks. | No         |
+| `cathedral`  | 9.3 kB      | 2.15 s   | 0.9 – 1       | Loud, with a long reverberant decay.                | No         |
 
-Custom odors can be authored with [`defineOdor`](/docs/api#defineodor).
+Every odor is trimmed and peak-normalized at build time, so emissions start sounding immediately.
 
-## Reverberation
+`soprano`, `pesante`, `sforzando`, `fortissimo` and `cathedral` are expressive odors: they are not referenced by any preset, so they only reach your bundle when you import them.
 
-Emissions are spatialized with a `ConvolverNode` loaded with the impulse response of a simulated room. Impulse responses are fetched lazily on first use and cached by the browser.
+```ts
+import { createEmitter } from "puejs";
+import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "puejs/odors";
 
-| Room          | RT60  | Use case                               |
-| ------------- | ----- | -------------------------------------- |
-| `"anechoic"`  | 0.0 s | Dry signal, no spatialization.         |
-| `"studio"`    | 0.4 s | Subtle presence. Recommended for apps. |
-| `"atrium"`    | 1.6 s | Open, airy.                            |
-| `"cathedral"` | 4.8 s | Maximum grandeur.                      |
+createEmitter(window, {
+  odors: [staccato, sustained, soprano, pesante, sforzando, fortissimo, cathedral],
+  // fortissimo lasts 2.5 s: raise the duration so it is not cut short.
+  duration: 2600,
+});
+```
 
-The `decay` option scales the impulse response tail, and `mix` controls the wet/dry ratio. Set `reverb: false` to bypass the convolver entirely.
+`duration` caps every emission. Short odors end naturally before the cap; long ones are faded out when they reach it.
 
-## Latency budget
+Your own samples can be used with [`defineOdor`](/docs/api#defineodor).
 
-Pue JS targets a **2 ms** budget between the animation frame that detects qualifying motion and the moment the emission is scheduled on the audio thread. In practice, the median is 0.9 ms and the 99th percentile 1.8 ms on mid-range hardware.
+## Voices
 
-This is achieved by:
+Each emission is a short Web Audio graph: the sample's playback rate sets the pitch, a peaking filter around 180 Hz adds `resonance`, and a gain node applies the tonnage-scaled volume with a 60 ms fade-out ending at `duration`. At most six voices play at once; the oldest is stopped when the limit is reached.
 
-- keeping synthesis inside a pre-warmed `AudioWorklet`,
-- communicating with the worklet through a lock-free ring buffer backed by a `SharedArrayBuffer` when cross-origin isolation is available, and through `MessagePort` otherwise,
-- scheduling emissions slightly ahead of `AudioContext.currentTime` to absorb jitter.
+## Scheduling
 
-Each `emit` event exposes the measured `latency`, so you can verify the budget in your own telemetry.
+Motion is detected and the emission scheduled within the same animation frame. Playback starts 5 ms later on the Web Audio clock, which absorbs scheduling jitter without being perceptible. Each `emit` event exposes the measured `latency` between detection and scheduling, so you can verify it in your own telemetry.

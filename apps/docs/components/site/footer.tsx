@@ -13,6 +13,7 @@ const columns = [
       { label: "Quick Start", href: "/docs/quick-start" },
       { label: "API Reference", href: "/docs/api" },
       { label: "Ecosystem", href: "/docs/ecosystem" },
+      { label: "Playground", href: "/playground" },
     ],
   },
   {
