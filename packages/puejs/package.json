@@ -1,0 +1,58 @@
+{
+  "name": "puejs",
+  "version": "1.0.0",
+  "description": "Next-generation acoustic feedback for modern web applications.",
+  "license": "Unlicense",
+  "homepage": "https://www.puejs.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ntltd/puejs.git",
+    "directory": "packages/puejs"
+  },
+  "keywords": [
+    "scroll",
+    "audio",
+    "web-audio",
+    "feedback",
+    "acoustic"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./odors": {
+      "types": "./dist/odors/index.d.ts",
+      "default": "./dist/odors/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "encode-odors": "node scripts/encode-odors.ts",
+    "size": "node scripts/size.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.1",
+    "eslint": "^9.39.5",
+    "eslint-config-custom": "*",
+    "tsconfig": "*",
+    "tsdown": "^0.23.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.2",
+    "vitest": "^5.0.3"
+  }
+}
