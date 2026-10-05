@@ -101,7 +101,7 @@ export function Footer(): React.JSX.Element {
             color: "fg.subtle",
           })}
         >
-          <span>Pue Labs · Released into the public domain under the Unlicense.</span>
+          <span>A Semi-Colon Systems project · Released into the public domain under the Unlicense.</span>
           <span
             className={css({
               display: "inline-flex",
