@@ -7,7 +7,6 @@ import { Callout } from "./components/docs/callout";
 import { InstallCommand } from "./components/landing/install-command";
 
 const heading = css({
-  scrollMarginTop: "24",
   color: "fg",
   letterSpacing: "-0.02em",
   "& > a": { color: "inherit", textDecoration: "none" },

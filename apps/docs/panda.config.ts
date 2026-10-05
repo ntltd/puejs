@@ -64,6 +64,8 @@ export default defineConfig({
     html: {
       colorScheme: "dark",
       scrollBehavior: "smooth",
+      // Sticky navbar (height 16) plus some air, so Next.js page scrolls and anchors don't land under it.
+      scrollPaddingTop: "24",
       WebkitFontSmoothing: "antialiased",
     },
     body: {
