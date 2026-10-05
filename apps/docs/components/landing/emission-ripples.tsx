@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { css } from "styled-system/css";
-import type { EmissionEvent } from "puejs";
+import type { EmissionEvent } from "@puejs/core";
 import { onEmission } from "../site/acoustic-feedback";
 
 const RIPPLE_DURATION = 1600;

@@ -11,7 +11,7 @@ The core runtime is framework agnostic and works today with any framework: creat
 ```tsx
 "use client";
 
-import { createEmitter } from "puejs";
+import { createEmitter } from "@puejs/core";
 import { useEffect, useRef } from "react";
 
 export function Feed({ children }: { children: React.ReactNode }): React.JSX.Element {
@@ -42,7 +42,7 @@ export function Feed({ children }: { children: React.ReactNode }): React.JSX.Ele
 
 ```vue
 <script setup lang="ts">
-import { createEmitter, type Emitter } from "puejs";
+import { createEmitter, type Emitter } from "@puejs/core";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const feed = ref<HTMLElement | null>(null);
@@ -68,11 +68,11 @@ onBeforeUnmount(() => {
 
 Official adapters are planned to remove this boilerplate:
 
-| Module         | Status  |
-| -------------- | ------- |
-| `puejs/react`  | Planned |
-| `puejs/vue`    | Planned |
-| `puejs/svelte` | Planned |
-| `puejs/solid`  | Planned |
+| Module          | Status  |
+| --------------- | ------- |
+| `@puejs/react`  | Planned |
+| `@puejs/vue`    | Planned |
+| `@puejs/svelte` | Planned |
+| `@puejs/solid`  | Planned |
 
 Follow progress on [GitHub](https://github.com/ntltd/puejs).

@@ -9,19 +9,19 @@ Pue JS is distributed as a single ESM package with bundled type definitions. It 
 ## Package managers
 
 ```bash
-npm install puejs
+npm install @puejs/core
 ```
 
 ```bash
-pnpm add puejs
+pnpm add @puejs/core
 ```
 
 ```bash
-yarn add puejs
+yarn add @puejs/core
 ```
 
 ```bash
-bun add puejs
+bun add @puejs/core
 ```
 
 ## Without a bundler
@@ -30,7 +30,7 @@ Pue JS can be loaded directly in the browser as a native ES module:
 
 ```html
 <script type="module">
-  import { createEmitter } from "https://cdn.jsdelivr.net/npm/puejs/+esm";
+  import { createEmitter } from "https://cdn.jsdelivr.net/npm/@puejs/core/+esm";
 
   const emitter = createEmitter(window);
   document.addEventListener("pointerdown", () => emitter.start(), { once: true });
@@ -48,10 +48,10 @@ Pue JS can be loaded directly in the browser as a native ES module:
 
 ## Entry points
 
-| Import path   | Contents                              | Size (gzip)        |
-| ------------- | ------------------------------------- | ------------------ |
-| `puejs`       | Core runtime, presets and their odors | 7.7 kB             |
-| `puejs/odors` | Seven odors, importable individually  | 1.7 – 10.9 kB each |
+| Import path         | Contents                              | Size (gzip)        |
+| ------------------- | ------------------------------------- | ------------------ |
+| `@puejs/core`       | Core runtime, presets and their odors | 7.7 kB             |
+| `@puejs/core/odors` | Seven odors, importable individually  | 1.7 – 10.9 kB each |
 
 ## Server-side rendering
 

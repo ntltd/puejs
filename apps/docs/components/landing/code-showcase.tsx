@@ -5,8 +5,8 @@ import { CodeLines } from "../code/code-lines";
 import { container, eyebrow, sectionLead, sectionTitle } from "../site/container";
 import { ArrowRightIcon } from "../site/icons";
 
-const source = `import { createEmitter, presets } from "puejs";
-import type { EmitterOptions } from "puejs";
+const source = `import { createEmitter, presets } from "@puejs/core";
+import type { EmitterOptions } from "@puejs/core";
 
 const options: EmitterOptions = {
   preset: presets.organic,

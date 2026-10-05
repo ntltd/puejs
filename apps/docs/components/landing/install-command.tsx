@@ -5,9 +5,9 @@ import { css } from "styled-system/css";
 import { CopyButton } from "../site/copy-button";
 
 const managers = [
-  { name: "npm", command: "npm install puejs" },
-  { name: "pnpm", command: "pnpm add puejs" },
-  { name: "yarn", command: "yarn add puejs" },
+  { name: "npm", command: "npm install @puejs/core" },
+  { name: "pnpm", command: "pnpm add @puejs/core" },
+  { name: "yarn", command: "yarn add @puejs/core" },
 ] as const;
 
 type Manager = (typeof managers)[number]["name"];

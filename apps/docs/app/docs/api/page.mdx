@@ -24,7 +24,7 @@ function createEmitter(target: Window | Element, options?: EmitterOptions): Emit
 Returns an [`Emitter`](#emitter) in the `idle` state. Invalid options throw `E_INVALID_OPTION`. On the server, or without Web Audio, the returned emitter is inert: its methods resolve immediately and it never emits.
 
 ```ts
-import { createEmitter } from "puejs";
+import { createEmitter } from "@puejs/core";
 
 const emitter = createEmitter(document.querySelector("#feed")!, { preset: "crisp" });
 ```
@@ -142,7 +142,7 @@ const presets: Readonly<Record<PresetName, AcousticProfile>>;
 Presets are frozen objects. Spread them to derive your own:
 
 ```ts
-import { presets, type AcousticProfile } from "puejs";
+import { presets, type AcousticProfile } from "@puejs/core";
 
 export const brand: AcousticProfile = { ...presets.organic, resonance: 0.55, duration: 360 };
 ```
@@ -160,7 +160,7 @@ The function receives the smoothed velocity in px/s and must return a value betw
 ## Odors
 
 ```ts
-import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "puejs/odors";
+import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "@puejs/core/odors";
 ```
 
 | Odor         | Tonnage range | Duration | In presets |

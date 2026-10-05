@@ -1,5 +1,5 @@
-import { createEmitter, type EmissionEvent, type Emitter } from "puejs";
-import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "puejs/odors";
+import { createEmitter, type EmissionEvent, type Emitter } from "@puejs/core";
+import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "@puejs/core/odors";
 
 const STORAGE_KEY = "puejs:acoustic-feedback";
 

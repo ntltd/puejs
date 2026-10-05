@@ -54,7 +54,7 @@ function tonnageCurve(value: unknown): TonnageCurveName | TonnageCurve {
 function odorList(value: unknown): readonly Odor[] {
   if (!Array.isArray(value) || value.length === 0) invalid("odors", "a non-empty array of odors");
   const odors = value as unknown[];
-  if (!odors.every(isOdor)) invalid("odors", "odors created with defineOdor() or imported from puejs/odors");
+  if (!odors.every(isOdor)) invalid("odors", "odors created with defineOdor() or imported from @puejs/core/odors");
   return Object.freeze([...(odors as Odor[])]);
 }
 

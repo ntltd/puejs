@@ -185,7 +185,7 @@ export async function renderOgImage(path: PagePath): Promise<ImageResponse> {
           }}
         >
           <span style={{ color: colors.lime }}>$</span>
-          <span>npm install puejs</span>
+          <span>npm install @puejs/core</span>
         </div>
       </div>
     </div>,
