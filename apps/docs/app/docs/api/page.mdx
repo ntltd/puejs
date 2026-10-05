@@ -160,8 +160,18 @@ The function receives the smoothed velocity in px/s and must return a value betw
 ## Odors
 
 ```ts
-import { staccato, sustained } from "puejs/odors";
+import { fortissimo, pesante, soprano, staccato, sustained } from "puejs/odors";
 ```
+
+| Odor         | Tonnage range | Duration | In presets |
+| ------------ | ------------- | -------- | ---------- |
+| `staccato`   | 0 – 0.6       | 0.39 s   | Yes        |
+| `sustained`  | 0.4 – 1       | 0.37 s   | Yes        |
+| `soprano`    | 0.3 – 0.8     | 1.23 s   | No         |
+| `pesante`    | 0.5 – 1       | 1.30 s   | No         |
+| `fortissimo` | 0.85 – 1      | 2.62 s   | No         |
+
+Odors longer than the emitter's `duration` are faded out when they reach it.
 
 ### `defineOdor()`
 

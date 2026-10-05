@@ -97,10 +97,28 @@ createEmitter(window, { odors: [staccato, sustained] });
 
 When several odors are available, the runtime selects one per emission based on tonnage. Where ranges overlap, the choice is drawn from the emitter's seeded random source.
 
-| Odor        | Size (gzip) | Tonnage range | Profile                  |
-| ----------- | ----------- | ------------- | ------------------------ |
-| `staccato`  | 2.2 kB      | 0 – 0.6       | Short and dry.           |
-| `sustained` | 2.0 kB      | 0.4 – 1       | Rounder, with more body. |
+| Odor         | Size (gzip) | Tonnage range | Profile                                             | In presets |
+| ------------ | ----------- | ------------- | --------------------------------------------------- | ---------- |
+| `staccato`   | 2.2 kB      | 0 – 0.6       | Short and dry.                                      | Yes        |
+| `sustained`  | 2.0 kB      | 0.4 – 1       | Rounder, with more body.                            | Yes        |
+| `soprano`    | 3.5 kB      | 0.3 – 0.8     | High-pitched, airy release.                         | No         |
+| `pesante`    | 5.4 kB      | 0.5 – 1       | Heavy and dense, with a viscous texture.            | No         |
+| `fortissimo` | 11.2 kB     | 0.85 – 1      | Long and powerful. Reserved for the fastest flicks. | No         |
+
+`soprano`, `pesante` and `fortissimo` are expressive odors: they are not referenced by any preset, so they only reach your bundle when you import them.
+
+```ts
+import { createEmitter } from "puejs";
+import { fortissimo, pesante, soprano, staccato, sustained } from "puejs/odors";
+
+createEmitter(window, {
+  odors: [staccato, sustained, soprano, pesante, fortissimo],
+  // fortissimo lasts 2.6 s: raise the duration so it is not cut short.
+  duration: 2600,
+});
+```
+
+`duration` caps every emission. Short odors end naturally before the cap; long ones are faded out when they reach it.
 
 Your own samples can be used with [`defineOdor`](/docs/api#defineodor).
 

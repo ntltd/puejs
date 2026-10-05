@@ -1,4 +1,5 @@
 import { createEmitter, type EmissionEvent, type Emitter } from "puejs";
+import { fortissimo, pesante, soprano, staccato, sustained } from "puejs/odors";
 
 const STORAGE_KEY = "puejs:acoustic-feedback";
 
@@ -11,7 +12,13 @@ const emissionListeners = new Set<(emission: EmissionEvent) => void>();
 function getEmitter(): Emitter {
   if (!emitter) {
     // The toggle is an explicit opt-in, so reduced motion does not silence it.
-    emitter = createEmitter(window, { preset: "organic", respectReducedMotion: false });
+    emitter = createEmitter(window, {
+      preset: "organic",
+      odors: [staccato, sustained, soprano, pesante, fortissimo],
+      // Long enough for fortissimo (2.6 s); shorter odors end naturally.
+      duration: 2600,
+      respectReducedMotion: false,
+    });
     emitter.on("emit", (emission) => {
       for (const listener of emissionListeners) listener(emission);
     });
