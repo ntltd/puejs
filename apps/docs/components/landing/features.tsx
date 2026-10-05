@@ -269,8 +269,8 @@ export function Features(): React.JSX.Element {
         <span className={eyebrow}>01 — Capabilities</span>
         <h2 className={sectionTitle}>Engineered for production-grade emissions.</h2>
         <p className={sectionLead}>
-          Every layer of the Pue JS runtime has been profiled, benchmarked and hardened to deliver deterministic
-          acoustic output at any scroll velocity.
+          Every layer of the Pue JS runtime has been profiled, benchmarked and hardened to keep emissions on time, in
+          proportion and in budget, at any scroll velocity.
         </p>
 
         <div
