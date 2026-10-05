@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fira_Code, Inter } from "next/font/google";
 import { Footer } from "../components/site/footer";
 import { Navbar } from "../components/site/navbar";
+import { pages, siteName, siteUrl } from "../lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -17,12 +18,15 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
+  metadataBase: siteUrl,
   title: {
-    default: "Pue JS — Acoustic Scroll Events for the modern web",
-    template: "%s — Pue JS",
+    default: pages["/"].title,
+    template: `%s — ${siteName}`,
   },
-  description:
-    "Next-generation acoustic feedback for modern web applications. Zero-dependency, strictly typed, purely organic scroll interactions.",
+  description: pages["/"].description,
+  applicationName: siteName,
+  openGraph: { type: "website", siteName, locale: "en_US" },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

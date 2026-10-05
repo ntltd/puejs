@@ -1,12 +1,9 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { css } from "styled-system/css";
 import { ArticleLayout } from "../../components/site/article-layout";
+import { pageMetadata } from "../../lib/site";
 
-export const metadata: Metadata = {
-  title: "RFCs",
-  description: "Design proposals for Pue JS and the web platform.",
-};
+export const metadata = pageMetadata("/rfcs");
 
 const rfcs = [
   {

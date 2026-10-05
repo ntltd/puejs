@@ -14,6 +14,14 @@ Acoustic Scroll Events for the modern web.
 
 Node.js 22+ (see `.nvmrc`), Yarn 1.22.
 
+## Environment
+
+| Variable               | Purpose                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------ |
+| `NEXT_PUBLIC_SITE_URL` | Overrides the absolute site URL used for canonical links and Open Graph images |
+
+Defaults to `https://www.puejs.org` in production builds and `http://localhost:3001` in development.
+
 ## Scripts
 
 ```sh
