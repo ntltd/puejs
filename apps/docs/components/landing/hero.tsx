@@ -227,11 +227,18 @@ export function Hero(): React.JSX.Element {
               bg: "primary",
               color: "carbon",
               fontWeight: "semibold",
+              lineHeight: "tight",
+              whiteSpace: "pre-wrap",
+              flexShrink: 0,
+              sm: {
+                whiteSpace: "normal",
+                lineHeight: "normal",
+              }
             })}
           >
-            v1.0 is out
+            {'v1.0\nis out'}
           </span>
-          Gaseous Rendering Engine
+          discover our new Gaseous Rendering Engine
           <ArrowRightIcon size={12} />
         </Link>
 
