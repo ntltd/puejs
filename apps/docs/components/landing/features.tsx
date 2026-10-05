@@ -62,7 +62,7 @@ function LatencyVisual(): React.JSX.Element {
           "& > span": { whiteSpace: "nowrap" },
         })}
       >
-        <span>emission latency · last 32 events</span>
+        <span>scheduling delay · last 32 events</span>
         <span className={css({ color: "primary" })}>budget 2.0 ms</span>
       </div>
       <div
@@ -120,7 +120,7 @@ function LatencyVisual(): React.JSX.Element {
           p99 <span className={css({ color: "fg" })}>1.8 ms</span>
         </span>
         <span>
-          thread <span className={css({ color: "fg" })}>AudioWorklet</span>
+          clock <span className={css({ color: "fg" })}>Web Audio</span>
         </span>
       </div>
     </div>
@@ -157,10 +157,8 @@ function TonnageVisual(): React.JSX.Element {
 
 function TreeShakingVisual(): React.JSX.Element {
   const modules = [
-    { name: "odors/staccato", size: "0.3 kB", kept: true },
-    { name: "odors/sustained", size: "0.4 kB", kept: true },
-    { name: "odors/tremolo", size: "0.5 kB", kept: false },
-    { name: "odors/infrasonic", size: "0.9 kB", kept: false },
+    { name: "odors/staccato", size: "2.2 kB", kept: true },
+    { name: "odors/sustained", size: "2.0 kB", kept: false },
   ];
   return (
     <ul
@@ -199,33 +197,31 @@ function TreeShakingVisual(): React.JSX.Element {
   );
 }
 
-function ReverbVisual(): React.JSX.Element {
-  const rooms = [
-    { name: "anechoic", decay: "0.0 s" },
-    { name: "studio", decay: "0.4 s" },
-    { name: "atrium", decay: "1.6 s" },
-    { name: "cathedral", decay: "4.8 s", active: true },
-  ];
+function DeterminismVisual(): React.JSX.Element {
+  const runs = ["run #1", "run #2"];
+  const sequence = ["0.91", "1.07", "0.96", "1.02", "0.94"];
   return (
-    <div
-      className={cx(
-        visual,
-        css({ display: "grid", gridTemplateColumns: { base: "repeat(2, 1fr)", md: "repeat(4, 1fr)" }, gap: "2" }),
-      )}
-    >
-      {rooms.map((room) => (
+    <div className={cx(visual, css({ display: "grid", gap: "2" }))}>
+      {runs.map((run) => (
         <div
           className={css({
+            display: "flex",
+            alignItems: "center",
+            gap: "3",
             p: "3",
             borderWidth: "1px",
-            borderColor: room.active ? "rgba(132, 204, 22, 0.5)" : "border",
+            borderColor: "border",
             borderRadius: "lg",
-            bg: room.active ? "rgba(132, 204, 22, 0.06)" : "carbon",
+            bg: "carbon",
           })}
-          key={room.name}
+          key={run}
         >
-          <div className={css({ color: room.active ? "primary" : "fg" })}>{room.name}</div>
-          <div className={css({ mt: "1", color: "fg.subtle" })}>RT60 {room.decay}</div>
+          <span className={css({ width: "14", color: "fg.subtle" })}>{run}</span>
+          {sequence.map((pitch, index) => (
+            <span className={css({ color: "primary" })} key={index}>
+              {pitch}
+            </span>
+          ))}
         </div>
       ))}
     </div>
@@ -255,8 +251,8 @@ export function Features(): React.JSX.Element {
             <span className={cardLabel}>latency</span>
             <h3 className={cardTitle}>Low-Latency Emission</h3>
             <p className={cardBody}>
-              Sub-2ms trigger latency from scroll delta to audible output. A lock-free AudioWorklet pipeline schedules
-              every emission off the main thread, keeping your INP untouched.
+              Motion is detected and the emission scheduled within the same animation frame. Passive listeners and
+              frame-aligned sampling keep your INP untouched.
             </p>
             <LatencyVisual />
           </article>
@@ -282,13 +278,13 @@ export function Features(): React.JSX.Element {
           </article>
 
           <article className={cx(card, css({ gridColumn: { lg: "span 2" } }))}>
-            <span className={cardLabel}>spatial</span>
-            <h3 className={cardTitle}>Convolution Reverberation</h3>
+            <span className={cardLabel}>determinism</span>
+            <h3 className={cardTitle}>Deterministic Emissions</h3>
             <p className={cardBody}>
-              Physically modelled room simulation, from anechoic chamber to cathedral. Impulse responses are streamed
-              lazily and cached at the edge for instant spatialization.
+              Pitch variation and odor selection are drawn from a seeded generator. Identical scroll input produces
+              identical acoustic output, so your acoustic layer can be snapshot-tested.
             </p>
-            <ReverbVisual />
+            <DeterminismVisual />
           </article>
         </div>
       </div>

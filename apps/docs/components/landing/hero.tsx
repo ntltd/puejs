@@ -299,11 +299,11 @@ export function Hero(): React.JSX.Element {
         >
           <div>
             <dt>bundle</dt>
-            <dd>1.4 kB gzip</dd>
+            <dd>8.1 kB gzip</dd>
           </div>
           <div>
-            <dt>latency p99</dt>
-            <dd>1.8 ms</dd>
+            <dt>scheduling</dt>
+            <dd>same frame</dd>
           </div>
           <div>
             <dt>dependencies</dt>

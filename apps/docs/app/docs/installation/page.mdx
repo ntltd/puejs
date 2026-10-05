@@ -41,30 +41,23 @@ Pue JS can be loaded directly in the browser as a native ES module:
 
 | Requirement   | Detail                                              |
 | ------------- | --------------------------------------------------- |
-| Runtime       | ES2020, `AudioWorklet`, secure context              |
+| Runtime       | ES2020 and the Web Audio API                        |
 | TypeScript    | 5.0 or later (optional, types are bundled)          |
 | Module format | ESM only                                            |
 | Side effects  | None — the package is marked `"sideEffects": false` |
 
 ## Entry points
 
-The package exposes several entry points so that each application only bundles the modules it uses:
-
-| Import path    | Contents                                            |
-| -------------- | --------------------------------------------------- |
-| `puejs`        | Core runtime: `createEmitter`, `presets`, utilities |
-| `puejs/odors`  | Individual synthesis modules, tree-shakable         |
-| `puejs/rooms`  | Impulse response descriptors for reverberation      |
-| `puejs/react`  | React adapter — see [Ecosystem](/docs/ecosystem)    |
-| `puejs/vue`    | Vue adapter                                         |
-| `puejs/svelte` | Svelte adapter                                      |
-| `puejs/solid`  | Solid adapter                                       |
+| Import path   | Contents                                            | Size (gzip)     |
+| ------------- | --------------------------------------------------- | --------------- |
+| `puejs`       | Core runtime, presets and their odors               | 8.1 kB          |
+| `puejs/odors` | `staccato` and `sustained`, importable individually | 2.2 kB / 2.0 kB |
 
 ## Server-side rendering
 
 Importing Pue JS on the server is safe: the package performs no work at import time. On the server, `createEmitter` returns an inert emitter whose methods are no-ops. In frameworks that distinguish client and server components, such as the Next.js App Router, instantiate emitters inside a client component.
 
 <Callout type="note" title="Content Security Policy">
-  The synthesis engine is loaded as an `AudioWorklet` module from a `blob:` URL. If your application enforces a strict
-  CSP, add `blob:` to `worker-src`, or self-host the worklet with the [`workletUrl`](/docs/api#emitteroptions) option.
+  Built-in odors are decoded from inline data and never fetched. Odors created with [`defineOdor`](/docs/api#defineodor)
+  from a URL are fetched on `start()` and must be allowed by your `connect-src` directive.
 </Callout>

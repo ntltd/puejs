@@ -4,21 +4,29 @@ export const metadata = pageMetadata("/docs/ecosystem");
 
 # Framework Adapters
 
-The core runtime is framework agnostic. Official adapters bind the emitter lifecycle to your framework's component lifecycle, so that emitters are created on mount, updated reactively and destroyed on unmount.
-
-All adapters ship inside the `puejs` package. There is nothing else to install.
+The core runtime is framework agnostic and works today with any framework: create the emitter in a client-side lifecycle hook and destroy it on cleanup.
 
 ## React
-
-`puejs/react` exposes a hook and an optional provider. It supports React 18 and 19, including concurrent rendering and Strict Mode.
 
 ```tsx
 "use client";
 
-import { usePue } from "puejs/react";
+import { createEmitter } from "puejs";
+import { useEffect, useRef } from "react";
 
-export function Article({ children }: { children: React.ReactNode }): React.JSX.Element {
-  const ref = usePue<HTMLDivElement>({ preset: "crisp", reverb: { room: "studio" } });
+export function Feed({ children }: { children: React.ReactNode }): React.JSX.Element {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const emitter = createEmitter(ref.current, { preset: "crisp" });
+    const start = (): void => void emitter.start();
+    window.addEventListener("pointerdown", start, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", start);
+      emitter.destroy();
+    };
+  }, []);
 
   return (
     <div ref={ref} style={{ overflowY: "auto", height: "100vh" }}>
@@ -28,83 +36,39 @@ export function Article({ children }: { children: React.ReactNode }): React.JSX.
 }
 ```
 
-Called without a ref target, `usePue` binds to `window`. Passing `false` instead of options disposes of the emitter.
-
-### Sharing an audio context
-
-Wrap your application in `PueProvider` to share a single `AudioContext` and default options between every `usePue` call:
-
-```tsx
-import { PueProvider } from "puejs/react";
-
-export default function RootLayout({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return (
-    <html lang="en">
-      <body>
-        <PueProvider defaults={{ preset: "organic", volume: 0.6 }}>{children}</PueProvider>
-      </body>
-    </html>
-  );
-}
-```
-
-<Callout type="note" title="Next.js App Router">
-  `PueProvider` and `usePue` are client-only. Both modules declare `"use client"`, so they can be rendered from a server
-  component layout without additional configuration.
-</Callout>
+`destroy()` is idempotent, so the double cleanup of React Strict Mode is safe.
 
 ## Vue
 
-`puejs/vue` provides a plugin and a `v-pue` directive. Vue 3.3 or later is required.
-
-```ts
-import { createApp } from "vue";
-import { PuePlugin } from "puejs/vue";
-import App from "./App.vue";
-
-createApp(App).use(PuePlugin, { preset: "organic" }).mount("#app");
-```
-
 ```vue
+<script setup lang="ts">
+import { createEmitter, type Emitter } from "puejs";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+
+const feed = ref<HTMLElement | null>(null);
+let emitter: Emitter | null = null;
+
+onMounted(() => {
+  emitter = createEmitter(feed.value!, { preset: "organic" });
+  window.addEventListener("pointerdown", () => emitter?.start(), { once: true });
+});
+onBeforeUnmount(() => emitter?.destroy());
+</script>
+
 <template>
-  <section v-pue="{ resonance: 0.5 }" class="feed">
-    <slot />
-  </section>
+  <section ref="feed" class="feed"><slot /></section>
 </template>
 ```
 
-## Svelte
+## Roadmap
 
-`puejs/svelte` exports an action compatible with Svelte 4 and 5.
+Official adapters are planned to remove this boilerplate:
 
-```svelte
-<script lang="ts">
-  import { pue } from "puejs/svelte";
-</script>
+| Module         | Status  |
+| -------------- | ------- |
+| `puejs/react`  | Planned |
+| `puejs/vue`    | Planned |
+| `puejs/svelte` | Planned |
+| `puejs/solid`  | Planned |
 
-<div use:pue={{ preset: "deep" }} class="timeline">
-  <slot />
-</div>
-```
-
-The action reacts to parameter updates and destroys the emitter when the element is removed.
-
-## Solid
-
-`puejs/solid` exports `createPue`, which accepts an accessor so that options stay reactive.
-
-```tsx
-import { createPue } from "puejs/solid";
-import { createSignal } from "solid-js";
-
-export function Feed() {
-  const [resonance, setResonance] = createSignal(0.4);
-  const ref = createPue(() => ({ resonance: resonance() }));
-
-  return <main ref={ref}>{/* … */}</main>;
-}
-```
-
-## Vanilla
-
-Without a framework, use the core API directly. See the [Quick Start](/docs/quick-start).
+Follow progress on [GitHub](https://github.com/ntltd/puejs).

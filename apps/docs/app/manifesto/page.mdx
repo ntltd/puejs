@@ -26,13 +26,13 @@ We choose the organic. Emissions that carry warmth, texture and imperfection. So
 
 ## III. The main thread is sacred
 
-No acoustic experience justifies a dropped frame. Sampling happens once per frame. Synthesis happens on the audio thread. Scroll listeners are passive, always.
+No acoustic experience justifies a dropped frame. Sampling happens once per frame. Audio is rendered on the audio thread. Scroll listeners are passive, always.
 
 If Pue JS ever degrades your Interaction to Next Paint, it is a bug, and we will treat it with the severity of one.
 
 ## IV. Every byte must justify itself
 
-The core runtime weighs 1.4 kB. It ships no audio files. It has no dependencies. Every odor, every room and every adapter is an isolated module that only exists in your bundle if you import it.
+The full library weighs 8.1 kB. It inlines its audio, so there is nothing to host. It has no dependencies. Every odor is an isolated module that only exists in your bundle if you import it.
 
 Abundance of expression must never become abundance of payload.
 

@@ -4,7 +4,7 @@ export const metadata = pageMetadata("/docs");
 
 # Introduction
 
-Pue JS is a zero-dependency, strictly typed acoustic feedback layer for the web. It observes the kinematics of a scroll container and translates them, in real time, into organic gaseous emissions — synthesized procedurally, spatialized, and scheduled entirely off the main thread.
+Pue JS is a zero-dependency, strictly typed acoustic feedback layer for the web. It observes the kinematics of a scroll container and translates them, in real time, into organic gaseous emissions — pitched, shaped and scheduled on the Web Audio clock.
 
 It is designed for teams who believe that interfaces should be felt, not merely seen.
 
@@ -13,31 +13,31 @@ It is designed for teams who believe that interfaces should be felt, not merely 
 Every scroll interaction carries information: direction, distance, velocity, acceleration. Most applications discard it. Pue JS captures this signal and renders it as audible feedback through a deterministic pipeline:
 
 1. **Sampling** — scroll position is sampled once per animation frame through passive listeners.
-2. **Kinematics** — instantaneous velocity is derived and smoothed with a critically damped filter.
-3. **Tonnage** — velocity is mapped to gain through a configurable tonnage curve.
-4. **Synthesis** — an odor module procedurally generates the emission inside an `AudioWorklet`.
-5. **Spatialization** — the signal is convolved with the impulse response of a simulated room.
+2. **Kinematics** — instantaneous velocity is derived and smoothed with a low-pass filter.
+3. **Tonnage** — velocity is mapped to intensity through a configurable tonnage curve.
+4. **Selection** — an odor, a pre-decoded sample, is chosen according to tonnage.
+5. **Playback** — the sample is played through Web Audio with per-emission pitch, resonance and gain.
 
-No audio files are shipped. Every emission is synthesized on demand, which keeps the core bundle at **1.4 kB gzip**.
+Samples are inlined in tree-shakable modules: there are no assets to host and no network requests. The full library, odors included, weighs **8.1 kB gzip**.
 
 ## Design principles
 
 - **Determinism.** Identical scroll input produces identical acoustic output. Emissions can be snapshot-tested.
-- **The main thread is sacred.** Synthesis and scheduling run in an `AudioWorklet`. Scroll handlers are passive and never block rendering.
-- **Pay for what you use.** Odors, rooms and adapters are isolated ES modules. Unused code is eliminated at build time.
+- **The main thread is sacred.** Scroll listeners are passive, sampling happens once per frame and audio is rendered on the Web Audio thread.
+- **Pay for what you use.** Odors are isolated ES modules. Unused odors are eliminated at build time.
 - **Consent first.** Pue JS never produces sound before an explicit user gesture and honours `prefers-reduced-motion` by default.
 
 These principles are expanded in the [Manifesto](/manifesto).
 
 ## Browser support
 
-Pue JS requires `AudioWorklet`, which is available in every evergreen browser. It must run in a [secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts) (HTTPS or `localhost`).
+Pue JS requires the Web Audio API, available in every evergreen browser.
 
 | Browser | Minimum version |
 | ------- | --------------- |
-| Chrome  | 66              |
+| Chrome  | 35              |
 | Edge    | 79              |
-| Firefox | 76              |
+| Firefox | 25              |
 | Safari  | 14.1            |
 
 In unsupported environments — including server-side rendering — `createEmitter` returns an inert emitter. Your application keeps working; it simply remains silent. Use [`isSupported()`](/docs/api#issupported) to detect this ahead of time.
