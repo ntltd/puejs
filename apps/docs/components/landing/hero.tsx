@@ -4,6 +4,7 @@ import { css, cx } from "styled-system/css";
 import { button } from "styled-system/recipes";
 import { container } from "../site/container";
 import { GlyphFlat, GlyphSwirl } from "../site/glyphs";
+import { EmissionRipples } from "./emission-ripples";
 import { InstallCommand } from "./install-command";
 import { ArrowRightIcon } from "../site/icons";
 
@@ -169,6 +170,7 @@ export function Hero(): React.JSX.Element {
               style={{ animationDelay: delay }}
             />
           ))}
+          <EmissionRipples />
           <div
             aria-hidden="true"
             className={css({
