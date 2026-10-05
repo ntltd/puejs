@@ -33,7 +33,8 @@ export function Feed({ children }: { children: React.ReactNode }) {
 
 - `usePue(options, { autoStart })` creates the emitter on mount, applies option changes with `update()` and destroys it on unmount. Without `ref`, it observes `window`. Pass `false` to disable it.
 - Audio only starts through `start()`, called from a user gesture, or with `autoStart: true`.
-- Define custom tonnage curves outside the component: functions are compared by identity.
+- Options are compared by value; removing one reverts it to its default. Define custom tonnage curves, profiles and odor lists outside the component: built inline, they are re-applied on every render.
+- Once `ref` has been attached, removing the element disables the emitter until a new element is attached.
 
 ## Provider
 
@@ -43,7 +44,7 @@ import { PueProvider } from "@puejs/react";
 <PueProvider defaults={{ preset: "organic", volume: 0.6 }}>{children}</PueProvider>;
 ```
 
-`defaults` are merged under every `usePue()` in the subtree, and `audioContext` is shared (never closed by the adapter).
+`defaults` are merged under every `usePue()` in the subtree, and `audioContext` is shared (never closed by the adapter). Changing it recreates the emitters.
 
 ## License
 

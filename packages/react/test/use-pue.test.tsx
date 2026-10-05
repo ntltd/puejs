@@ -1,10 +1,12 @@
 import { createEmitter } from "@puejs/core";
-import { act, render, renderHook, screen } from "@testing-library/react";
-import { StrictMode, useState } from "react";
+import { act, cleanup, render, renderHook, screen } from "@testing-library/react";
+import { StrictMode, useEffect, useState } from "react";
 import { renderToString } from "react-dom/server";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { usePue } from "../src";
 import { fakes, liveFakes } from "./fake-core";
+
+afterEach(cleanup);
 
 vi.mock("@puejs/core", async () => {
   const { createFakeEmitter } = await import("./fake-core");
@@ -117,6 +119,88 @@ describe("usePue", () => {
   it("leaves exactly one live emitter under Strict Mode", () => {
     renderHook(() => usePue(), { wrapper: StrictMode });
     expect(liveFakes()).toHaveLength(1);
+  });
+
+  it("binds to the element on the first commit, without a throwaway window emitter", async () => {
+    function Started() {
+      const { ref } = usePue<HTMLDivElement>({}, { autoStart: true });
+      return <div data-testid="started" ref={ref} />;
+    }
+    render(<Started />);
+    await act(async () => {});
+    expect(createEmitter).toHaveBeenCalledTimes(1);
+    expect(fakes[0].target).toBe(screen.getByTestId("started"));
+    expect(fakes[0].start).toHaveBeenCalledTimes(1);
+  });
+
+  it("binds to the element under Strict Mode without throwing", () => {
+    render(
+      <StrictMode>
+        <Feed />
+      </StrictMode>,
+    );
+    expect(liveFakes()).toHaveLength(1);
+    expect(liveFakes()[0].target).toBe(screen.getByTestId("feed"));
+  });
+
+  it("does not fall back to window when the element goes away", () => {
+    function Panel() {
+      const [open, setOpen] = useState(true);
+      const { ref } = usePue<HTMLDivElement>();
+      return (
+        <>
+          <button onClick={() => setOpen(false)} type="button">
+            close
+          </button>
+          {open ? <div data-testid="panel" ref={ref} /> : null}
+        </>
+      );
+    }
+    render(<Panel />);
+    act(() => screen.getByText("close").click());
+    expect(liveFakes()).toHaveLength(0);
+  });
+
+  it("does not loop on inline options compared by identity", () => {
+    const { rerender } = renderHook(
+      ({ n }) => usePue({ tonnage: (velocity: number) => velocity / n, volume: Number.NaN }),
+      {
+        initialProps: { n: 3000 },
+      },
+    );
+    expect(() => {
+      rerender({ n: 3000 });
+      rerender({ n: 3000 });
+    }).not.toThrow();
+    expect(liveFakes()).toHaveLength(1);
+  });
+
+  it("reverts removed options to their defaults", () => {
+    const { rerender } = renderHook(({ options }) => usePue(options), {
+      initialProps: { options: { volume: 0.5, threshold: 120 } as Record<string, number> },
+    });
+    rerender({ options: { volume: 0.5 } });
+    const [[partial]] = liveFakes()[0].update.mock.calls as [[Record<string, unknown>]];
+    // The removed key must be sent explicitly as undefined so that the core falls back to its default.
+    expect(Object.keys(partial).sort()).toEqual(["threshold", "volume"]);
+    expect(partial.threshold).toBeUndefined();
+  });
+
+  it("keeps start, stop and emit safe after the emitter is gone", async () => {
+    let captured: ReturnType<typeof usePue> | undefined;
+    function Holder({ enabled }: { enabled: boolean }) {
+      const result = usePue(enabled ? {} : false);
+      useEffect(() => {
+        if (result.emitter) captured ??= result;
+      });
+      return null;
+    }
+    const { rerender } = render(<Holder enabled />);
+    expect(captured?.emitter).not.toBeNull();
+    rerender(<Holder enabled={false} />);
+    await expect(captured?.start()).resolves.toBeUndefined();
+    expect(() => captured?.stop()).not.toThrow();
+    expect(() => captured?.emit()).not.toThrow();
   });
 
   it("renders on the server without creating an emitter", () => {

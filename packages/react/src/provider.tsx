@@ -1,5 +1,5 @@
 import type { EmitterOptions } from "@puejs/core";
-import { createContext, useContext, useMemo } from "react";
+import { createContext, type ReactNode, useContext, useMemo } from "react";
 
 interface PueContextValue {
   defaults?: EmitterOptions;
@@ -13,10 +13,10 @@ export interface PueProviderProps {
   defaults?: EmitterOptions;
   /** Context shared by every emitter in the subtree. Never closed by the adapter. */
   audioContext?: AudioContext;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
-export function PueProvider({ defaults, audioContext, children }: PueProviderProps): React.JSX.Element {
+export function PueProvider({ defaults, audioContext, children }: PueProviderProps): ReactNode {
   const value = useMemo(() => ({ defaults, audioContext }), [defaults, audioContext]);
   return <PueContext.Provider value={value}>{children}</PueContext.Provider>;
 }
