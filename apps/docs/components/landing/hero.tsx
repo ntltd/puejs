@@ -6,6 +6,7 @@ import { container } from "../site/container";
 import { GlyphFlat, GlyphSwirl } from "../site/glyphs";
 import { EmissionRipples } from "./emission-ripples";
 import { InstallCommand } from "./install-command";
+import { SoundHint } from "./sound-hint";
 import { ArrowRightIcon } from "../site/icons";
 
 export function Hero(): React.JSX.Element {
@@ -261,6 +262,8 @@ export function Hero(): React.JSX.Element {
           Zero-dependency, strictly typed, purely organic scroll interactions.
         </p>
 
+        <SoundHint />
+
         <div
           className={css({
             mt: "10",
@@ -300,10 +303,6 @@ export function Hero(): React.JSX.Element {
           <div>
             <dt>bundle</dt>
             <dd>7.7 kB gzip</dd>
-          </div>
-          <div>
-            <dt>scheduling</dt>
-            <dd>same frame</dd>
           </div>
           <div>
             <dt>dependencies</dt>
