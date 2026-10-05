@@ -130,7 +130,8 @@ export function Playground(): React.JSX.Element {
           display: "grid",
           gridTemplateColumns: { base: "minmax(0, 1fr)", lg: "340px minmax(0, 1fr)" },
           gap: "4",
-          alignItems: "start",
+          // The right column stretches to the height of the controls.
+          alignItems: "stretch",
         })}
       >
         {/* Controls */}
@@ -284,7 +285,10 @@ export function Playground(): React.JSX.Element {
 
         <div className={css({ display: "flex", flexDirection: "column", gap: "4", minWidth: "0" })}>
           {/* Scroll surface */}
-          <section aria-label="Scroll surface" className={card}>
+          <section
+            aria-label="Scroll surface"
+            className={cx(card, css({ flex: "1", display: "flex", flexDirection: "column", minHeight: "0" }))}
+          >
             <div className={cardHeader}>
               <span className={css({ display: "inline-flex", alignItems: "center", gap: "2" })}>
                 <span
@@ -307,7 +311,7 @@ export function Playground(): React.JSX.Element {
               </button>
             </div>
             <div
-              className={css({ height: "480px", overflowY: "auto", overscrollBehavior: "contain" })}
+              className={css({ flex: "1 1 0", minHeight: "480px", overflowY: "auto", overscrollBehavior: "contain" })}
               ref={surfaceRef}
               tabIndex={0}
             >
