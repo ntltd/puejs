@@ -6,6 +6,8 @@ Acoustic Scroll Events for the modern web.
 
 - [Turborepo](https://turborepo.com) monorepo (yarn workspaces)
 - `apps/docs`: landing page — [Next.js 16](https://nextjs.org) (App Router, Turbopack), React 19
+- `packages/puejs`: `@puejs/core`, the library (zero dependencies, Web Audio)
+- `packages/react`: `@puejs/react`, the React adapter (`usePue`, `PueProvider`)
 - Styling: [Panda CSS 2](https://panda-css.com) (design tokens + recipes in `apps/docs/panda.config.ts`)
 - `packages/eslint-config-custom`: shared ESLint 9 flat config (`eslint-config-next` + `eslint-config-turbo`)
 - `packages/tsconfig`: shared `tsconfig.json`s (TypeScript 6)
