@@ -1,5 +1,5 @@
 import { createEmitter, type EmissionEvent, type Emitter } from "puejs";
-import { fortissimo, pesante, soprano, staccato, sustained } from "puejs/odors";
+import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "puejs/odors";
 
 const STORAGE_KEY = "puejs:acoustic-feedback";
 
@@ -14,8 +14,8 @@ function getEmitter(): Emitter {
     // The toggle is an explicit opt-in, so reduced motion does not silence it.
     emitter = createEmitter(window, {
       preset: "organic",
-      odors: [staccato, sustained, soprano, pesante, fortissimo],
-      // Long enough for fortissimo (2.6 s); shorter odors end naturally.
+      odors: [staccato, sustained, soprano, pesante, sforzando, fortissimo, cathedral],
+      // Long enough for fortissimo (2.5 s); shorter odors end naturally.
       duration: 2600,
       // One emission per half viewport: each scroll gesture is heard on its own.
       throttle: "distance",

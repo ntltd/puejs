@@ -1,12 +1,35 @@
 import { presets, type EmitterOptions, type Odor, type PresetName, type TonnageCurveName } from "puejs";
-import { fortissimo, pesante, soprano, staccato, sustained } from "puejs/odors";
+import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "puejs/odors";
 
-export const ODORS = { staccato, sustained, soprano, pesante, fortissimo } satisfies Record<string, Odor>;
+export const ODORS = {
+  staccato,
+  sustained,
+  soprano,
+  pesante,
+  sforzando,
+  fortissimo,
+  cathedral,
+} satisfies Record<string, Odor>;
 
 export type OdorName = keyof typeof ODORS;
 export type ThrottleMode = "velocity" | "distance" | "interval";
 
 export const ODOR_NAMES = Object.keys(ODORS) as OdorName[];
+
+/** Length of each encoded sample, in milliseconds. */
+export const ODOR_DURATIONS: Record<OdorName, number> = {
+  staccato: 310,
+  sustained: 220,
+  soprano: 370,
+  pesante: 940,
+  sforzando: 1010,
+  fortissimo: 2520,
+  cathedral: 2160,
+};
+
+/** Raises the duration so that the given odor is never cut short. */
+export const withDurationFor = (settings: Settings, name: OdorName): Settings =>
+  ODOR_DURATIONS[name] > settings.duration ? { ...settings, duration: ODOR_DURATIONS[name] } : settings;
 export const PRESET_NAMES = Object.keys(presets) as PresetName[];
 export const TONNAGE_CURVES: TonnageCurveName[] = ["logarithmic", "linear", "exponential"];
 

@@ -97,23 +97,27 @@ createEmitter(window, { odors: [staccato, sustained] });
 
 When several odors are available, the runtime selects one per emission based on tonnage. Where ranges overlap, the choice is drawn from the emitter's seeded random source.
 
-| Odor         | Size (gzip) | Tonnage range | Profile                                             | In presets |
-| ------------ | ----------- | ------------- | --------------------------------------------------- | ---------- |
-| `staccato`   | 2.2 kB      | 0 – 0.6       | Short and dry.                                      | Yes        |
-| `sustained`  | 2.0 kB      | 0.4 – 1       | Rounder, with more body.                            | Yes        |
-| `soprano`    | 3.5 kB      | 0.3 – 0.8     | High-pitched, airy release.                         | No         |
-| `pesante`    | 5.4 kB      | 0.5 – 1       | Heavy and dense, with a viscous texture.            | No         |
-| `fortissimo` | 11.2 kB     | 0.85 – 1      | Long and powerful. Reserved for the fastest flicks. | No         |
+| Odor         | Size (gzip) | Duration | Tonnage range | Profile                                             | In presets |
+| ------------ | ----------- | -------- | ------------- | --------------------------------------------------- | ---------- |
+| `staccato`   | 2.1 kB      | 0.31 s   | 0 – 0.6       | Short and dry.                                      | Yes        |
+| `sustained`  | 1.7 kB      | 0.21 s   | 0.4 – 1       | Rounder, with more body.                            | Yes        |
+| `soprano`    | 2.3 kB      | 0.37 s   | 0.3 – 0.8     | High-pitched, airy release.                         | No         |
+| `pesante`    | 4.6 kB      | 0.94 s   | 0.5 – 1       | Heavy and dense, with a viscous texture.            | No         |
+| `sforzando`  | 4.9 kB      | 1.01 s   | 0.7 – 1       | Sudden, hard accent.                                | No         |
+| `fortissimo` | 10.9 kB     | 2.52 s   | 0.85 – 1      | Long and powerful. Reserved for the fastest flicks. | No         |
+| `cathedral`  | 9.3 kB      | 2.15 s   | 0.9 – 1       | Loud, with a long reverberant decay.                | No         |
 
-`soprano`, `pesante` and `fortissimo` are expressive odors: they are not referenced by any preset, so they only reach your bundle when you import them.
+Every odor is trimmed and peak-normalized at build time, so emissions start sounding immediately.
+
+`soprano`, `pesante`, `sforzando`, `fortissimo` and `cathedral` are expressive odors: they are not referenced by any preset, so they only reach your bundle when you import them.
 
 ```ts
 import { createEmitter } from "puejs";
-import { fortissimo, pesante, soprano, staccato, sustained } from "puejs/odors";
+import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "puejs/odors";
 
 createEmitter(window, {
-  odors: [staccato, sustained, soprano, pesante, fortissimo],
-  // fortissimo lasts 2.6 s: raise the duration so it is not cut short.
+  odors: [staccato, sustained, soprano, pesante, sforzando, fortissimo, cathedral],
+  // fortissimo lasts 2.5 s: raise the duration so it is not cut short.
   duration: 2600,
 });
 ```

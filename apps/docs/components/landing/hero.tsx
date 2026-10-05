@@ -299,7 +299,7 @@ export function Hero(): React.JSX.Element {
         >
           <div>
             <dt>bundle</dt>
-            <dd>8.1 kB gzip</dd>
+            <dd>7.7 kB gzip</dd>
           </div>
           <div>
             <dt>scheduling</dt>

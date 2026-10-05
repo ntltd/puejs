@@ -42,15 +42,15 @@ Scrolling above 80 px/s now triggers emissions whose pitch and gain follow the s
 
 ## Odors
 
-Built-in samples are inlined, so there is nothing to host. Presets use `staccato` and `sustained`; `soprano`, `pesante` and `fortissimo` are opt-in and only bundled when imported:
+Built-in samples are inlined, so there is nothing to host. Presets use `staccato` and `sustained`; `soprano`, `pesante`, `sforzando`, `fortissimo` and `cathedral` are opt-in and only bundled when imported:
 
 ```ts
 import { createEmitter } from "puejs";
-import { fortissimo, pesante, soprano, staccato, sustained } from "puejs/odors";
+import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "puejs/odors";
 
 createEmitter(window, {
-  odors: [staccato, sustained, soprano, pesante, fortissimo],
-  duration: 2600, // fortissimo lasts 2.6 s
+  odors: [staccato, sustained, soprano, pesante, sforzando, fortissimo, cathedral],
+  duration: 2600, // fortissimo lasts 2.5 s
 });
 ```
 

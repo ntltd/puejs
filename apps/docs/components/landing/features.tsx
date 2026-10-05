@@ -157,11 +157,11 @@ function TonnageVisual(): React.JSX.Element {
 
 function TreeShakingVisual(): React.JSX.Element {
   const modules = [
-    { name: "odors/staccato", size: "2.2 kB", kept: true },
-    { name: "odors/sustained", size: "2.0 kB", kept: true },
-    { name: "odors/soprano", size: "3.5 kB", kept: false },
-    { name: "odors/pesante", size: "5.4 kB", kept: false },
-    { name: "odors/fortissimo", size: "11.2 kB", kept: false },
+    { name: "odors/staccato", size: "2.1 kB", kept: true },
+    { name: "odors/sustained", size: "1.7 kB", kept: true },
+    { name: "odors/soprano", size: "2.3 kB", kept: false },
+    { name: "odors/sforzando", size: "4.9 kB", kept: false },
+    { name: "odors/cathedral", size: "9.3 kB", kept: false },
   ];
   return (
     <ul

@@ -13,11 +13,13 @@ import { ScrollSurfaceContent } from "./scroll-surface";
 import {
   generateCode,
   ODOR_NAMES,
+  ODOR_DURATIONS,
   ODORS,
   PRESET_NAMES,
   settingsFromPreset,
   TONNAGE_CURVES,
   toOptions,
+  withDurationFor,
   type OdorName,
   type Settings,
   type ThrottleMode,
@@ -85,7 +87,11 @@ export function Playground(): React.JSX.Element {
   };
 
   const preview = async (name: OdorName): Promise<void> => {
+    // Long odors raise the duration first, so the preview is heard in full.
+    const next = withDurationFor(settings, name);
+    if (next !== settings) setSettings(next);
     const emitter = getEmitter();
+    emitter.update(toOptions(next));
     if (emitter.state === "idle") await emitter.start();
     emitter.emit({ odor: ODORS[name], tonnage: 0.7 });
   };
@@ -109,7 +115,8 @@ export function Playground(): React.JSX.Element {
       // At least one odor must stay selected.
       if (selected && current.odors.length === 1) return current;
       const odors = selected ? current.odors.filter((odor) => odor !== name) : [...current.odors, name];
-      return { ...current, odors: ODOR_NAMES.filter((odor) => odors.includes(odor)) };
+      const next = { ...current, odors: ODOR_NAMES.filter((odor) => odors.includes(odor)) };
+      return selected ? next : withDurationFor(next, name);
     });
 
   const running = status === "running" || status === "suspended";
@@ -169,6 +176,9 @@ export function Playground(): React.JSX.Element {
                       type="checkbox"
                     />
                     {name}
+                    <span className={css({ ml: "auto", fontSize: "xs", color: "fg.subtle" })}>
+                      {(ODOR_DURATIONS[name] / 1000).toFixed(2)} s
+                    </span>
                   </label>
                   <button
                     aria-label={`Preview ${name}`}
