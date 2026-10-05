@@ -144,7 +144,7 @@ export default defineConfig({
           "45%": { opacity: "0" },
           "100%": { opacity: "0" },
         },
-        ping: {
+        emissionPing: {
           "0%": { opacity: "1", transform: "translate(-50%, -50%) scale(0.6)" },
           "100%": { opacity: "0", transform: "translate(-50%, -50%) scale(var(--ping-scale, 4))" },
         },

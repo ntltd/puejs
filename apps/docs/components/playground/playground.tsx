@@ -29,8 +29,9 @@ const cardHeader = css({
   alignItems: "center",
   justifyContent: "space-between",
   gap: "3",
-  minHeight: "12",
+  minHeight: "16",
   px: "4",
+  py: "3",
   borderBottomWidth: "1px",
   borderColor: "border",
 });

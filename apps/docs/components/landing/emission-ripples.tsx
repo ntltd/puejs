@@ -49,7 +49,7 @@ export function EmissionRipples({ subscribe = onEmission }: { subscribe?: Subscr
             borderColor: "rgba(163, 230, 53, 0.75)",
             borderRadius: "full",
             pointerEvents: "none",
-            animation: "ping 1.6s cubic-bezier(0.2, 0.6, 0.3, 1) forwards",
+            animation: "emissionPing 1.6s cubic-bezier(0.2, 0.6, 0.3, 1) forwards",
             _motionReduce: { display: "none" },
           })}
           key={ripple.id}
