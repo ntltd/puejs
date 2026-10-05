@@ -209,7 +209,7 @@ const components: MDXComponents = {
     </td>
   ),
   Callout,
-  InstallCommand: () => <InstallCommand className={css({ my: "6" })} />,
+  InstallCommand: ({ packages }: { packages?: string }) => <InstallCommand packages={packages} variant="docs" />,
 };
 
 export function useMDXComponents(): MDXComponents {

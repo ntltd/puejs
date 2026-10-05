@@ -5,9 +5,9 @@ import { css, cx } from "styled-system/css";
 import { CopyButton } from "../site/copy-button";
 
 const managers = [
-  { name: "npm", command: "npm install @puejs/core" },
-  { name: "pnpm", command: "pnpm add @puejs/core" },
-  { name: "yarn", command: "yarn add @puejs/core" },
+  { name: "npm", install: "npm install" },
+  { name: "pnpm", install: "pnpm add" },
+  { name: "yarn", install: "yarn add" },
 ] as const;
 
 type Manager = (typeof managers)[number]["name"];
@@ -50,62 +50,72 @@ function setManager(name: Manager): void {
   listeners.forEach((listener) => listener());
 }
 
-export function InstallCommand({ className }: { className?: string }): React.JSX.Element {
+type InstallCommandProps = {
+  /** Space-separated packages to install. */
+  packages?: string;
+  /** `hero` is a compact card; `docs` spans the column and matches the code blocks. */
+  variant?: "hero" | "docs";
+  className?: string;
+};
+
+export function InstallCommand({
+  packages = "@puejs/core",
+  variant = "hero",
+  className,
+}: InstallCommandProps): React.JSX.Element {
   const id = useId();
   const manager = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const command = managers.find((item) => item.name === manager)?.command ?? managers[0].command;
-
-  const select = (name: Manager): void => setManager(name);
+  const install = managers.find((item) => item.name === manager)?.install ?? managers[0].install;
+  const command = `${install} ${packages}`;
+  const docs = variant === "docs";
 
   return (
     <div
       className={cx(
         css({
           width: "100%",
-          maxWidth: "380px",
           bg: "surface",
           borderWidth: "1px",
           borderColor: "border",
           borderRadius: "lg",
           fontFamily: "mono",
-          fontSize: "sm",
           overflow: "hidden",
         }),
+        docs ? css({ my: "6", fontSize: { base: "xs", md: "13px" } }) : css({ maxWidth: "380px", fontSize: "sm" }),
         className,
       )}
     >
       <div
         aria-label="Package manager"
-        className={css({
-          display: "flex",
-          gap: "1",
-          px: "2",
-          pt: "2",
-          borderBottomWidth: "1px",
-          borderColor: "border",
-        })}
+        className={cx(
+          css({ display: "flex", gap: "1", borderBottomWidth: "1px", borderColor: "border" }),
+          // In docs, the tab bar has the height of a code block caption and its first label lines up with the code.
+          docs ? css({ height: "9", alignItems: "stretch", px: "2.5" }) : css({ px: "2", pt: "2" }),
+        )}
         role="tablist"
       >
         {managers.map((item) => (
           <button
             aria-controls={`${id}-panel`}
             aria-selected={item.name === manager}
-            className={css({
-              px: "2.5",
-              py: "1.5",
-              mb: "-1px",
-              borderBottomWidth: "1px",
-              borderColor: "transparent",
-              fontSize: "xs",
-              color: "fg.subtle",
-              cursor: "pointer",
-              transition: "color 120ms ease, border-color 120ms ease",
-              _hover: { color: "fg" },
-              _focusVisible: { outline: "2px solid token(colors.primary)", outlineOffset: "-2px" },
-              "&[aria-selected=true]": { color: "fg", borderColor: "primary" },
-            })}
+            className={cx(
+              css({
+                px: "2.5",
+                mb: "-1px",
+                fontSize: "xs",
+                borderBottomWidth: "1px",
+                borderColor: "transparent",
+                color: "fg.subtle",
+                cursor: "pointer",
+                transition: "color 120ms ease, border-color 120ms ease",
+                _hover: { color: "fg" },
+                _focusVisible: { outline: "2px solid token(colors.primary)", outlineOffset: "-2px" },
+                "&[aria-selected=true]": { color: "fg", borderColor: "primary" },
+              }),
+              !docs && css({ py: "1.5" }),
+            )}
             key={item.name}
-            onClick={() => select(item.name)}
+            onClick={() => setManager(item.name)}
             role="tab"
             type="button"
           >
@@ -115,14 +125,28 @@ export function InstallCommand({ className }: { className?: string }): React.JSX
       </div>
 
       <div
-        className={css({ display: "flex", alignItems: "center", gap: "4", height: "12", pl: "4", pr: "1.5" })}
+        className={cx(
+          css({ display: "flex", alignItems: "center", gap: "4", pr: "1.5" }),
+          docs ? css({ height: "14", pl: "5" }) : css({ height: "12", pl: "4" }),
+        )}
         id={`${id}-panel`}
         role="tabpanel"
       >
         <span aria-hidden="true" className={css({ color: "primary", userSelect: "none" })}>
           $
         </span>
-        <code className={css({ flex: "1", color: "fg", textAlign: "left" })}>{command}</code>
+        <code
+          className={css({
+            flex: "1",
+            minWidth: "0",
+            color: "fg",
+            textAlign: "left",
+            overflowX: "auto",
+            whiteSpace: "nowrap",
+          })}
+        >
+          {command}
+        </code>
         <CopyButton key={command} label="Copy install command" text={command} />
       </div>
     </div>
