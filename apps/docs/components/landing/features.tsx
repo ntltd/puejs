@@ -157,11 +157,81 @@ function TonnageVisual(): React.JSX.Element {
 
 function TreeShakingVisual(): React.JSX.Element {
   const modules = [
-    { name: "odors/staccato", size: "2.1 kB", kept: true },
-    { name: "odors/sustained", size: "1.7 kB", kept: true },
-    { name: "odors/soprano", size: "2.3 kB", kept: false },
-    { name: "odors/sforzando", size: "4.9 kB", kept: false },
-    { name: "odors/cathedral", size: "9.3 kB", kept: false },
+    { name: "odors/staccato", size: 2.1, kept: true },
+    { name: "odors/sustained", size: 1.7, kept: true },
+    { name: "odors/soprano", size: 2.3, kept: false },
+    { name: "odors/sforzando", size: 4.9, kept: false },
+    { name: "odors/cathedral", size: 9.3, kept: false },
+  ];
+  const total = modules.reduce((sum, module) => sum + module.size, 0);
+  const shipped = modules.filter((module) => module.kept).reduce((sum, module) => sum + module.size, 0);
+  return (
+    <div className={visual}>
+      <div
+        className={css({
+          display: "flex",
+          justifyContent: "space-between",
+          color: "fg.subtle",
+          mb: "3",
+          gap: "4",
+          "& > span": { whiteSpace: "nowrap" },
+        })}
+      >
+        <span>production bundle · gzip</span>
+        <span>
+          <span className={css({ color: "primary" })}>{shipped.toFixed(1)} kB</span> of {total.toFixed(1)} kB
+        </span>
+      </div>
+      <div
+        aria-hidden="true"
+        className={css({ display: "flex", gap: "1", height: "2", mb: "4", borderRadius: "full", overflow: "hidden" })}
+      >
+        {modules.map((module) => (
+          <span
+            className={css({ bg: module.kept ? "primary" : "border" })}
+            key={module.name}
+            style={{ flex: module.size }}
+          />
+        ))}
+      </div>
+      <ul
+        className={css({
+          display: "grid",
+          gridTemplateColumns: { base: "1fr", md: "repeat(2, 1fr)" },
+          columnGap: "6",
+          borderWidth: "1px",
+          borderColor: "border",
+          borderRadius: "lg",
+          bg: "carbon",
+          px: "3",
+          py: "1",
+        })}
+      >
+        {modules.map((module) => (
+          <li className={css({ display: "flex", justifyContent: "space-between", py: "2" })} key={module.name}>
+            <span
+              className={css({
+                color: module.kept ? "fg" : "fg.subtle",
+                textDecoration: module.kept ? "none" : "line-through",
+              })}
+            >
+              {module.name}
+            </span>
+            <span className={css({ color: module.kept ? "primary" : "fg.subtle" })}>
+              {module.kept ? `${module.size} kB` : "eliminated"}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ConsentVisual(): React.JSX.Element {
+  const guarantees = [
+    { label: "before a gesture", value: "silent" },
+    { label: "reduced motion", value: "silent" },
+    { label: "user toggle", value: "persisted" },
   ];
   return (
     <ul
@@ -170,64 +240,25 @@ function TreeShakingVisual(): React.JSX.Element {
         css({ borderWidth: "1px", borderColor: "border", borderRadius: "lg", bg: "carbon", overflow: "hidden" }),
       )}
     >
-      {modules.map((module) => (
+      {guarantees.map((item) => (
         <li
           className={css({
             display: "flex",
             justifyContent: "space-between",
+            gap: "3",
             px: "3",
             py: "2",
             borderBottomWidth: "1px",
             borderColor: "border",
             _last: { borderBottomWidth: "0" },
           })}
-          key={module.name}
+          key={item.label}
         >
-          <span
-            className={css({
-              color: module.kept ? "fg" : "fg.subtle",
-              textDecoration: module.kept ? "none" : "line-through",
-            })}
-          >
-            {module.name}
-          </span>
-          <span className={css({ color: module.kept ? "primary" : "fg.subtle" })}>
-            {module.kept ? module.size : "eliminated"}
-          </span>
+          <span className={css({ color: "fg.subtle" })}>{item.label}</span>
+          <span className={css({ color: "primary" })}>{item.value}</span>
         </li>
       ))}
     </ul>
-  );
-}
-
-function DeterminismVisual(): React.JSX.Element {
-  const runs = ["run #1", "run #2"];
-  const sequence = ["0.91", "1.07", "0.96", "1.02", "0.94"];
-  return (
-    <div className={cx(visual, css({ display: "grid", gap: "2" }))}>
-      {runs.map((run) => (
-        <div
-          className={css({
-            display: "flex",
-            alignItems: "center",
-            gap: "3",
-            p: "3",
-            borderWidth: "1px",
-            borderColor: "border",
-            borderRadius: "lg",
-            bg: "carbon",
-          })}
-          key={run}
-        >
-          <span className={css({ width: "14", color: "fg.subtle" })}>{run}</span>
-          {sequence.map((pitch, index) => (
-            <span className={css({ color: "primary" })} key={index}>
-              {pitch}
-            </span>
-          ))}
-        </div>
-      ))}
-    </div>
   );
 }
 
@@ -271,6 +302,16 @@ export function Features(): React.JSX.Element {
           </article>
 
           <article className={card}>
+            <span className={cardLabel}>consent</span>
+            <h3 className={cardTitle}>Consent First</h3>
+            <p className={cardBody}>
+              No emission before an explicit user gesture, and silence for users who prefer reduced motion. Your
+              visitors opt in; nobody is surprised.
+            </p>
+            <ConsentVisual />
+          </article>
+
+          <article className={cx(card, css({ gridColumn: { lg: "span 2" } }))}>
             <span className={cardLabel}>bundle</span>
             <h3 className={cardTitle}>Tree-shakable Odors</h3>
             <p className={cardBody}>
@@ -278,16 +319,6 @@ export function Features(): React.JSX.Element {
               is eliminated at build time.
             </p>
             <TreeShakingVisual />
-          </article>
-
-          <article className={cx(card, css({ gridColumn: { lg: "span 2" } }))}>
-            <span className={cardLabel}>determinism</span>
-            <h3 className={cardTitle}>Deterministic Emissions</h3>
-            <p className={cardBody}>
-              Pitch variation and odor selection are drawn from a seeded generator. Identical scroll input produces
-              identical acoustic output, so your acoustic layer can be snapshot-tested.
-            </p>
-            <DeterminismVisual />
           </article>
         </div>
       </div>

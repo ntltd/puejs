@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useSyncExternalStore } from "react";
-import { css } from "styled-system/css";
+import { css, cx } from "styled-system/css";
 import { CopyButton } from "../site/copy-button";
 
 const managers = [
@@ -50,7 +50,7 @@ function setManager(name: Manager): void {
   listeners.forEach((listener) => listener());
 }
 
-export function InstallCommand(): React.JSX.Element {
+export function InstallCommand({ className }: { className?: string }): React.JSX.Element {
   const id = useId();
   const manager = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const command = managers.find((item) => item.name === manager)?.command ?? managers[0].command;
@@ -59,17 +59,20 @@ export function InstallCommand(): React.JSX.Element {
 
   return (
     <div
-      className={css({
-        width: "100%",
-        maxWidth: "380px",
-        bg: "surface",
-        borderWidth: "1px",
-        borderColor: "border",
-        borderRadius: "lg",
-        fontFamily: "mono",
-        fontSize: "sm",
-        overflow: "hidden",
-      })}
+      className={cx(
+        css({
+          width: "100%",
+          maxWidth: "380px",
+          bg: "surface",
+          borderWidth: "1px",
+          borderColor: "border",
+          borderRadius: "lg",
+          fontFamily: "mono",
+          fontSize: "sm",
+          overflow: "hidden",
+        }),
+        className,
+      )}
     >
       <div
         aria-label="Package manager"

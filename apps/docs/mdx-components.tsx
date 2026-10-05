@@ -4,6 +4,7 @@ import { isValidElement } from "react";
 import { css, cx } from "styled-system/css";
 import { CodeBlock } from "./components/code/code-block";
 import { Callout } from "./components/docs/callout";
+import { InstallCommand } from "./components/landing/install-command";
 
 const heading = css({
   scrollMarginTop: "24",
@@ -208,6 +209,7 @@ const components: MDXComponents = {
     </td>
   ),
   Callout,
+  InstallCommand: () => <InstallCommand className={css({ my: "6" })} />,
 };
 
 export function useMDXComponents(): MDXComponents {
