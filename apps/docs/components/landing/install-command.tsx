@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useId, useState, useSyncExternalStore } from "react";
+import { useId, useSyncExternalStore } from "react";
 import { css } from "styled-system/css";
-import { CheckIcon, CopyIcon } from "../site/icons";
+import { CopyButton } from "../site/copy-button";
 
 const managers = [
   { name: "npm", command: "npm install puejs" },
@@ -53,28 +53,9 @@ function setManager(name: Manager): void {
 export function InstallCommand(): React.JSX.Element {
   const id = useId();
   const manager = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const [copied, setCopied] = useState(false);
   const command = managers.find((item) => item.name === manager)?.command ?? managers[0].command;
 
-  useEffect(() => {
-    if (!copied) return;
-    const timeout = setTimeout(() => setCopied(false), 1600);
-    return () => clearTimeout(timeout);
-  }, [copied]);
-
-  const select = (name: Manager): void => {
-    setManager(name);
-    setCopied(false);
-  };
-
-  const copy = async (): Promise<void> => {
-    try {
-      await navigator.clipboard.writeText(command);
-      setCopied(true);
-    } catch {
-      // Clipboard access denied: the command stays selectable.
-    }
-  };
+  const select = (name: Manager): void => setManager(name);
 
   return (
     <div
@@ -139,25 +120,7 @@ export function InstallCommand(): React.JSX.Element {
           $
         </span>
         <code className={css({ flex: "1", color: "fg", textAlign: "left" })}>{command}</code>
-        <button
-          aria-label={copied ? "Copied" : "Copy install command"}
-          className={css({
-            display: "grid",
-            placeItems: "center",
-            width: "9",
-            height: "9",
-            borderRadius: "md",
-            color: copied ? "primary" : "fg.subtle",
-            cursor: "pointer",
-            transition: "color 120ms ease, background 120ms ease",
-            _hover: { bg: "surface.hover", color: "fg" },
-            _focusVisible: { outline: "2px solid token(colors.primary)" },
-          })}
-          onClick={copy}
-          type="button"
-        >
-          {copied ? <CheckIcon /> : <CopyIcon />}
-        </button>
+        <CopyButton key={command} label="Copy install command" text={command} />
       </div>
     </div>
   );

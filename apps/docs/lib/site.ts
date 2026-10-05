@@ -61,6 +61,12 @@ export const pages = {
     title: "API Reference",
     description: "Complete reference of the Pue JS public API.",
   },
+  "/playground": {
+    label: "Playground",
+    title: "Playground",
+    headline: "Acoustic Playground",
+    description: "Tune every acoustic parameter, scroll, and hear the result in real time.",
+  },
   "/manifesto": {
     label: "Manifesto",
     title: "Manifesto",

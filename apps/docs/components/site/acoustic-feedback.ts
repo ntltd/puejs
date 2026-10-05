@@ -17,6 +17,8 @@ function getEmitter(): Emitter {
       odors: [staccato, sustained, soprano, pesante, fortissimo],
       // Long enough for fortissimo (2.6 s); shorter odors end naturally.
       duration: 2600,
+      // One emission per half viewport: each scroll gesture is heard on its own.
+      throttle: "distance",
       respectReducedMotion: false,
     });
     emitter.on("emit", (emission) => {

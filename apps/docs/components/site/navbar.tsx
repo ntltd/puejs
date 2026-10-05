@@ -10,6 +10,7 @@ const links = [
   { label: "Docs", href: "/docs" },
   { label: "API Reference", href: "/docs/api" },
   { label: "Ecosystem", href: "/docs/ecosystem" },
+  { label: "Playground", href: "/playground" },
 ];
 
 export function Navbar(): React.JSX.Element {

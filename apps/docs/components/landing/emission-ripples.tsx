@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { css } from "styled-system/css";
+import type { EmissionEvent } from "puejs";
 import { onEmission } from "../site/acoustic-feedback";
 
 const RIPPLE_DURATION = 1600;
@@ -9,14 +10,16 @@ const MAX_RIPPLES = 6;
 
 type Ripple = { id: number; scale: number };
 
-/** One ring per emission, sized by its tonnage. */
-export function EmissionRipples(): React.JSX.Element {
+type Subscribe = (listener: (emission: EmissionEvent) => void) => () => void;
+
+/** One ring per emission, sized by its tonnage. Listens to the site-wide emitter unless told otherwise. */
+export function EmissionRipples({ subscribe = onEmission }: { subscribe?: Subscribe }): React.JSX.Element {
   const [ripples, setRipples] = useState<Ripple[]>([]);
 
   useEffect(() => {
     let nextId = 0;
     const timeouts = new Set<ReturnType<typeof setTimeout>>();
-    const unsubscribe = onEmission((emission) => {
+    const unsubscribe = subscribe((emission) => {
       const id = nextId++;
       setRipples((current) => [...current.slice(-(MAX_RIPPLES - 1)), { id, scale: 2.5 + emission.tonnage * 2.5 }]);
       const timeout = setTimeout(() => {
@@ -29,7 +32,7 @@ export function EmissionRipples(): React.JSX.Element {
       unsubscribe();
       for (const timeout of timeouts) clearTimeout(timeout);
     };
-  }, []);
+  }, [subscribe]);
 
   return (
     <>
