@@ -17,6 +17,9 @@ const firaCode = Fira_Code({
   display: "swap",
 });
 
+// Re-renders every page hourly, so the navbar's star count changes.
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   metadataBase: siteUrl,
   title: {

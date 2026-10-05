@@ -11,6 +11,16 @@ const links = [
   { label: "Playground", href: "/playground" },
 ];
 
+/** Fake star count, between 9k and 99k. Derived from the current hour so every page shows the same one. */
+function starCount(): string {
+  let hash = Math.floor(Date.now() / 3_600_000);
+  // Integer hash, so consecutive hours give unrelated counts.
+  hash = Math.imul(hash ^ (hash >>> 16), 0x45d9f3b);
+  hash = Math.imul(hash ^ (hash >>> 16), 0x45d9f3b);
+  hash ^= hash >>> 16;
+  return `${9 + ((hash >>> 0) % 91)}k`;
+}
+
 export function Navbar(): React.JSX.Element {
   return (
     <header
@@ -126,7 +136,7 @@ export function Navbar(): React.JSX.Element {
               })}
             >
               <GlyphFlat size={12} />
-              12k
+              {starCount()}
             </span>
           </div>
         </div>
