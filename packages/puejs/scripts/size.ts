@@ -32,7 +32,7 @@ const importOf = (names: string, path: string): string =>
 
 const total = await bundledSize(importOf("createEmitter", "index.js"));
 const sizes: Record<string, number> = {};
-for (const name of ["staccato", "sustained", "soprano", "pesante", "fortissimo"]) {
+for (const name of ["staccato", "sustained", "soprano", "pesante", "fortissimo", "sforzando", "cathedral"]) {
   sizes[name] = await bundledSize(importOf(name, "odors/index.js"));
 }
 

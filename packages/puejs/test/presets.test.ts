@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fortissimo, pesante, soprano, staccato, sustained } from "../src/odors";
+import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "../src/odors";
 import { presets } from "../src/presets";
 
 describe("odors", () => {
@@ -15,14 +15,16 @@ describe("odors", () => {
     expect(soprano).toMatchObject({ name: "soprano", tonnage: [0.3, 0.8] });
     expect(pesante).toMatchObject({ name: "pesante", tonnage: [0.5, 1] });
     expect(fortissimo).toMatchObject({ name: "fortissimo", tonnage: [0.85, 1] });
-    for (const odor of [soprano, pesante, fortissimo]) {
+    expect(sforzando).toMatchObject({ name: "sforzando", tonnage: [0.7, 1] });
+    expect(cathedral).toMatchObject({ name: "cathedral", tonnage: [0.9, 1] });
+    for (const odor of [soprano, pesante, fortissimo, sforzando, cathedral]) {
       expect(odor.src.startsWith("data:audio/mpeg;base64,")).toBe(true);
     }
   });
 
   it("keep the expressive odors out of the presets", () => {
     const presetOdors = Object.values(presets).flatMap((profile) => profile.odors);
-    for (const odor of [soprano, pesante, fortissimo]) expect(presetOdors).not.toContain(odor);
+    for (const odor of [soprano, pesante, fortissimo, sforzando, cathedral]) expect(presetOdors).not.toContain(odor);
   });
 });
 
