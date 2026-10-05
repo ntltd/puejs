@@ -5,6 +5,6 @@ export default defineConfig({
   format: "esm",
   dts: true,
   platform: "neutral",
-  target: "es2020",
+  target: "es2022",
   clean: true,
 });

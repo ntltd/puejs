@@ -4487,7 +4487,7 @@ rolldown@1.2.7:
     "@rolldown/binding-win32-arm64-msvc" "1.2.7"
     "@rolldown/binding-win32-x64-msvc" "1.2.7"
 
-rolldown@~1.2.11, rolldown@~1.2.7:
+rolldown@~1.2.11, rolldown@~1.2.12, rolldown@~1.2.7:
   version "1.2.12"
   resolved "https://registry.yarnpkg.com/rolldown/-/rolldown-1.2.12.tgz#75215a6b55a2a9e8f577ac937a4fe42d9682ae0c"
   integrity sha512-8wafseiaG80xmXSfqidUNqZcylTlhmPZZt+za2m+js2sFZ8dTNlhIOV2WcbIPx2hgwPBJpEUGFAMZ9bgBBLTSQ==
