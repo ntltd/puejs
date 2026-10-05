@@ -29,7 +29,7 @@ const highlights = [
   },
   {
     title: "Framework agnostic",
-    body: "Bind to any scroll container, from the window to a single panel. Works with every framework today.",
+    body: "Bind to any scroll container, from the window to a single panel. Official React adapter, and plain lifecycle hooks everywhere else.",
   },
   {
     title: "Observable",

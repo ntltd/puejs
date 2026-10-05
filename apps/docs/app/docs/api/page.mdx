@@ -250,3 +250,34 @@ class PueError extends Error {
 | `E_DESTROYED`      | A method is called on a destroyed emitter.                                                                                     |
 | `E_INVALID_OPTION` | An option is out of range, or immutable after `start()`.                                                                       |
 | `E_DECODE`         | An odor could not be fetched or decoded. Dispatched through the `error` event; the emitter keeps running with its other odors. |
+
+## React adapter
+
+Available from `@puejs/react`. See [Framework Adapters](/docs/ecosystem#react) for usage.
+
+### `usePue()`
+
+```ts
+function usePue<T extends Element = Element>(
+  options?: EmitterOptions | false,
+  config?: { autoStart?: boolean },
+): {
+  ref: (element: T | null) => void;
+  state: EmitterState;
+  start: () => Promise<void>;
+  stop: () => void;
+  emit: (input?: EmissionInput) => void;
+  emitter: Emitter | null;
+};
+```
+
+Options are compared by value: pitch ranges structurally, odor lists element by element, everything else by identity. Removing an option reverts it to its default. Inline functions, profiles and odor lists built during render are compared by identity and applied on every render: define them outside the component to avoid needless updates. Changing the shared `audioContext` recreates the emitter.
+
+Without `ref`, the hook observes `window`. Once `ref` has been attached, removing the element disables the emitter until a new element is attached. On the server and while disabled, `emitter` is `null`, `state` is `"idle"`, and `start`, `stop` and `emit` are safe no-ops with stable identities.
+
+### `PueProvider`
+
+| Prop           | Type             | Description                                                     |
+| -------------- | ---------------- | --------------------------------------------------------------- |
+| `defaults`     | `EmitterOptions` | Merged under the options of every `usePue` call in the subtree. |
+| `audioContext` | `AudioContext`   | Shared by every emitter in the subtree. Never closed.           |

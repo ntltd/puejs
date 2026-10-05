@@ -34,24 +34,14 @@ createEmitter(window, {
 ```tsx
 "use client";
 
-import { createEmitter, type Emitter } from "@puejs/core";
-import { useEffect, useRef, useState } from "react";
+import { usePue } from "@puejs/react";
 
 export function AcousticToggle(): React.JSX.Element {
-  const [enabled, setEnabled] = useState(false);
-  const emitter = useRef<Emitter | null>(null);
-
-  useEffect(() => () => emitter.current?.destroy(), []);
-
-  const toggle = (): void => {
-    emitter.current ??= createEmitter(window, { preset: "discreet" });
-    if (enabled) emitter.current.stop();
-    else void emitter.current.start(); // called from the click: audio is unlocked immediately
-    setEnabled(!enabled);
-  };
+  const { state, start, stop } = usePue({ preset: "discreet" });
+  const enabled = state !== "idle";
 
   return (
-    <button aria-pressed={enabled} onClick={toggle} type="button">
+    <button aria-pressed={enabled} onClick={() => (enabled ? stop() : start())} type="button">
       Acoustic feedback
     </button>
   );
