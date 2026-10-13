@@ -56,6 +56,7 @@ export function Hero(): React.JSX.Element {
             width: "132px",
             height: "132px",
             mb: "10",
+            "--contact-reach-up": { base: "72px", md: "120px" },
           })}
         >
           {/* Concentric emission field, centred on the mark */}
@@ -115,41 +116,53 @@ export function Hero(): React.JSX.Element {
               [112, 470],
               [248, 430],
               [302, 250],
+              [90, 140],
             ] as const
-          ).map(([angle, distance], index) => (
-            <span
-              aria-hidden="true"
-              className={css({
-                position: "absolute",
-                display: "grid",
-                placeItems: "center",
-                width: "18px",
-                height: "18px",
-                ml: "-9px",
-                mt: "-9px",
-                color: "primary.hover",
-                filter: "drop-shadow(0 0 6px rgba(132, 204, 22, 0.8))",
-                opacity: "0",
-                animation: "contact 8s linear infinite",
-                pointerEvents: "none",
-                _motionReduce: { display: "none" },
-              })}
-              key={angle}
-              style={{
-                left: `calc(50% + ${Math.sin((angle * Math.PI) / 180) * distance}px)`,
-                top: `calc(50% - ${Math.cos((angle * Math.PI) / 180) * distance}px)`,
-                animationDelay: `${(angle / 360) * 8}s`,
-              }}
-            >
-              {/* Every second pair is mirrored on the Y axis */}
+          ).map(([angle, distance], index) => {
+            const sin = Math.sin((angle * Math.PI) / 180);
+            const cos = Math.cos((angle * Math.PI) / 180);
+            // Pull the contact in along its bearing so it stays clear of the screen edges and the navbar
+            const caps = [`(50vw - 64px) / ${Math.abs(sin).toFixed(4)}`];
+            if (cos > 0) caps.push(`var(--contact-reach-up) / ${cos.toFixed(4)}`);
+            const radius = `min(${distance}px, ${caps.join(", ")})`;
+            return (
               <span
-                className={css({ display: "grid", "&[data-mirrored]": { transform: "scaleX(-1)" } })}
-                data-mirrored={Math.floor(index / 2) % 2 === 1 ? "" : undefined}
+                aria-hidden="true"
+                className={css({
+                  position: "absolute",
+                  display: "grid",
+                  placeItems: "center",
+                  width: "14px",
+                  height: "14px",
+                  ml: "-7px",
+                  mt: "-7px",
+                  color: "primary.hover",
+                  filter: "drop-shadow(0 0 6px rgba(132, 204, 22, 0.8))",
+                  // Contacts on the right pick up the sulfur end of the title gradient
+                  "&[data-east]": { color: "accent", filter: "drop-shadow(0 0 6px rgba(234, 179, 8, 0.8))" },
+                  opacity: "0",
+                  animation: "contact 8s linear infinite",
+                  pointerEvents: "none",
+                  _motionReduce: { display: "none" },
+                })}
+                data-east={sin > 0 ? "" : undefined}
+                key={angle}
+                style={{
+                  left: `calc(50% + ${sin.toFixed(4)} * ${radius})`,
+                  top: `calc(50% - ${cos.toFixed(4)} * ${radius})`,
+                  animationDelay: `${(angle / 360) * 8}s`,
+                }}
               >
-                {index % 2 === 0 ? <GlyphFlat /> : <GlyphSwirl />}
+                {/* Every second pair is mirrored on the Y axis */}
+                <span
+                  className={css({ display: "grid", "&[data-mirrored]": { transform: "scaleX(-1)" } })}
+                  data-mirrored={Math.floor(index / 2) % 2 === 1 ? "" : undefined}
+                >
+                  {index % 2 === 0 ? <GlyphFlat size={14} /> : <GlyphSwirl size={14} />}
+                </span>
               </span>
-            </span>
-          ))}
+            );
+          })}
           {["0s", "1.6s", "3.2s"].map((delay) => (
             <span
               aria-hidden="true"
@@ -233,10 +246,10 @@ export function Hero(): React.JSX.Element {
               sm: {
                 whiteSpace: "normal",
                 lineHeight: "normal",
-              }
+              },
             })}
           >
-            {'v1.0\nis out'}
+            {"v1.0\nis out"}
           </span>
           discover our new Gaseous Rendering Engine
           <ArrowRightIcon size={12} />
