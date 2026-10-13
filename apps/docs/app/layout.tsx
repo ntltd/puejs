@@ -1,3 +1,4 @@
+import { GoogleTagManager } from "@next/third-parties/google";
 import type { Metadata, Viewport } from "next";
 import { Fira_Code, Inter } from "next/font/google";
 import { Footer } from "../components/site/footer";
@@ -16,6 +17,9 @@ const firaCode = Fira_Code({
   variable: "--font-fira-code",
   display: "swap",
 });
+
+// Google Tag Manager container, loaded in production builds only so local runs stay out of analytics.
+const gtmId = process.env.NODE_ENV === "production" ? "GTM-T7CLPWGW" : undefined;
 
 // Re-renders every page hourly, so the navbar's star count changes.
 export const revalidate = 3600;
@@ -40,6 +44,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }): React.JSX.Element {
   return (
     <html lang="en" className={`${inter.variable} ${firaCode.variable}`}>
+      {gtmId && <GoogleTagManager gtmId={gtmId} />}
       <body>
         <Navbar />
         {children}
