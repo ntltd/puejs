@@ -8,7 +8,7 @@ export const metadata = pageMetadata("/rfcs/0001-web-olfactory-api");
 | ---------- | -------------------------------------------------------- |
 | RFC        | 0001                                                     |
 | Status     | Draft — open for comments                                |
-| Authors    | Pue JS Core Team                                         |
+| Authors    | Pue&thinsp;JS Core Team                                         |
 | Created    | 2026-10-05                                               |
 | Target     | Incubation in the Web Platform Incubator Community Group |
 | Discussion | [GitHub](https://github.com/ntltd/puejs)                 |
@@ -19,7 +19,7 @@ This document proposes the **Web Olfactory API**, a permission-gated interface t
 
 The API follows the device-access model established by WebHID, Web Bluetooth and WebUSB, and integrates with the Web Audio clock so that olfactory output can be scheduled with the same precision as acoustic output.
 
-Pue JS has spent its first major version proving that scroll interactions can carry meaningful acoustic feedback. This RFC addresses the next modality.
+Pue&thinsp;JS has spent its first major version proving that scroll interactions can carry meaningful acoustic feedback. This RFC addresses the next modality.
 
 ## Motivation
 
@@ -171,9 +171,9 @@ if ("olfaction" in navigator) {
 }
 ```
 
-## Integration with Pue JS
+## Integration with Pue&thinsp;JS
 
-Pue JS will ship experimental support behind the `@puejs/olfactory` entry point once a browser exposes the API behind a flag. The adapter maps each acoustic emission's tonnage to olfactory intensity, and its odor to a default note blend:
+Pue&thinsp;JS will ship experimental support behind the `@puejs/olfactory` entry point once a browser exposes the API behind a flag. The adapter maps each acoustic emission's tonnage to olfactory intensity, and its odor to a default note blend:
 
 ```ts:emitter.ts
 import { createEmitter } from "@puejs/core";

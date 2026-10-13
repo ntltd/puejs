@@ -47,7 +47,7 @@ export function Footer(): React.JSX.Element {
           <div className={css({ gridColumn: { base: "span 2", md: "auto" } })}>
             <Link className={css({ display: "inline-flex", alignItems: "center", gap: "2.5" })} href="/">
               <LogoMark />
-              <span className={css({ fontWeight: "semibold", letterSpacing: "-0.02em" })}>Pue JS</span>
+              <span className={css({ fontWeight: "semibold", letterSpacing: "-0.02em" })}>Pue&thinsp;JS</span>
             </Link>
             <p className={css({ mt: "4", maxWidth: "280px", fontSize: "sm", color: "fg.subtle" })}>
               Acoustic scroll events for the modern web. Open source, released into the public domain.

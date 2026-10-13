@@ -138,7 +138,7 @@ export async function renderOgImage(path: PagePath): Promise<ImageResponse> {
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           {/* eslint-disable-next-line @next/next/no-img-element -- rendered by Satori, not the browser */}
           <img alt="" height={40} src={logo} width={26} />
-          <span style={{ fontSize: 30, fontWeight: 600, letterSpacing: "-0.02em" }}>Pue JS</span>
+          <span style={{ fontSize: 30, fontWeight: 600, letterSpacing: "-0.02em" }}>Pue&thinsp;JS</span>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>

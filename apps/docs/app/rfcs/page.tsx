@@ -30,7 +30,7 @@ export default function RfcsPage(): React.JSX.Element {
         RFCs
       </h1>
       <p className={css({ mt: "4", color: "fg.muted", lineHeight: "1.75" })}>
-        Substantial changes to Pue JS — and proposals that extend beyond the library to the web platform itself — go
+        Substantial changes to Pue&thinsp;JS — and proposals that extend beyond the library to the web platform itself — go
         through a public design process. Each RFC describes the problem, the proposed solution, its trade-offs and the
         questions that remain open.
       </p>

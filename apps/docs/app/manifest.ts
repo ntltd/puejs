@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Pue JS",
-    short_name: "Pue JS",
+    short_name: "PueJS",
     description: "Next-generation acoustic feedback for modern web applications.",
     start_url: "/",
     display: "standalone",

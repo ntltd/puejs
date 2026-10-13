@@ -4,7 +4,7 @@ export const metadata = pageMetadata("/docs/concepts");
 
 # Architecture
 
-This page describes the Pue JS runtime from the moment a scroll event is observed to the moment an emission reaches the audio output. Understanding the pipeline is not required to use the library, but it will help you make informed tuning decisions.
+This page describes the Pue&thinsp;JS runtime from the moment a scroll event is observed to the moment an emission reaches the audio output. Understanding the pipeline is not required to use the library, but it will help you make informed tuning decisions.
 
 ```ts:pipeline.ts
 // The emission pipeline, conceptually
@@ -13,7 +13,7 @@ scroll → sample → kinematics → tonnage → odor → voice → destination
 
 ## Emitters
 
-An **emitter** is the unit of composition in Pue JS. It owns:
+An **emitter** is the unit of composition in Pue&thinsp;JS. It owns:
 
 - a binding to one scroll container (`window` or an `Element`),
 - an `AudioContext`, either private or shared through the `audioContext` option,
@@ -35,7 +35,7 @@ Transitions are reported through the `statechange` event.
 
 ## Scroll sampling
 
-Pue JS never performs work inside the scroll event itself. A passive listener flags the container as dirty; the position is read once per animation frame. The frame loop stops by itself 150 ms after the last movement.
+Pue&thinsp;JS never performs work inside the scroll event itself. A passive listener flags the container as dirty; the position is read once per animation frame. The frame loop stops by itself 150 ms after the last movement.
 
 ### Velocity
 

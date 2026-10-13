@@ -4,7 +4,7 @@ export const metadata = pageMetadata("/docs/api");
 
 # API Reference
 
-This page documents every public export of Pue JS. All signatures are written in TypeScript; the same API is available from plain JavaScript.
+This page documents every public export of Pue&thinsp;JS. All signatures are written in TypeScript; the same API is available from plain JavaScript.
 
 ## Core
 
@@ -207,7 +207,7 @@ Returns `true` when the Web Audio API is available. Always `false` on the server
 function unlock(context?: AudioContext): Promise<boolean>;
 ```
 
-Resumes the given audio context — or every context created by Pue JS — from within a user gesture. Resolves with `true` if playback is now allowed.
+Resumes the given audio context — or every context created by Pue&thinsp;JS — from within a user gesture. Resolves with `true` if playback is now allowed.
 
 ## Types
 
@@ -237,7 +237,7 @@ interface AcousticProfile {
 
 ## Errors
 
-Every error thrown or dispatched by Pue JS is a `PueError` with a stable `code`.
+Every error thrown or dispatched by Pue&thinsp;JS is a `PueError` with a stable `code`.
 
 ```ts:core.d.ts
 class PueError extends Error {

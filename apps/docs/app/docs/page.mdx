@@ -4,13 +4,13 @@ export const metadata = pageMetadata("/docs");
 
 # Introduction
 
-Pue JS is a zero-dependency, strictly typed acoustic feedback layer for the web. It observes the kinematics of a scroll container and translates them, in real time, into organic gaseous emissions — pitched, shaped and scheduled on the Web Audio clock.
+Pue&thinsp;JS is a zero-dependency, strictly typed acoustic feedback layer for the web. It observes the kinematics of a scroll container and translates them, in real time, into organic gaseous emissions — pitched, shaped and scheduled on the Web Audio clock.
 
 It is designed for teams who believe that interfaces should be felt, not merely seen.
 
 <Callout title="Pronunciation">
 
-**Pue JS** — /py ˌdʒeɪˈɛs/
+**Pue&thinsp;JS** — /py ˌdʒeɪˈɛs/
 
 _Pue_ is pronounced the French way, in a single syllable: /py/, with the lips rounded as for "oo" while saying "ee". Not "pew", not "poo". In French, _pue_ means "stinks".
 
@@ -18,9 +18,9 @@ The name is a statement of intent. Faced with the sheer number of JavaScript lib
 
 </Callout>
 
-## What Pue JS does
+## What Pue&thinsp;JS does
 
-Every scroll interaction carries information: direction, distance, velocity, acceleration. Most applications discard it. Pue JS captures this signal and renders it as audible feedback through a deterministic pipeline:
+Every scroll interaction carries information: direction, distance, velocity, acceleration. Most applications discard it. Pue&thinsp;JS captures this signal and renders it as audible feedback through a deterministic pipeline:
 
 1. **Sampling** — scroll position is sampled once per animation frame through passive listeners.
 2. **Kinematics** — instantaneous velocity is derived and smoothed with a low-pass filter.
@@ -35,13 +35,13 @@ Samples are inlined in tree-shakable modules: there are no assets to host and no
 - **Determinism.** Identical scroll input produces identical acoustic output. Emissions can be snapshot-tested.
 - **The main thread is sacred.** Scroll listeners are passive, sampling happens once per frame and audio is rendered on the Web Audio thread.
 - **Pay for what you use.** Odors are isolated ES modules. Unused odors are eliminated at build time.
-- **Consent first.** Pue JS never produces sound before an explicit user gesture and honours `prefers-reduced-motion` by default.
+- **Consent first.** Pue&thinsp;JS never produces sound before an explicit user gesture and honours `prefers-reduced-motion` by default.
 
 These principles are expanded in the [Manifesto](/manifesto).
 
 ## Browser support
 
-Pue JS requires the Web Audio API and ships ES2022 syntax, both available in every evergreen browser.
+Pue&thinsp;JS requires the Web Audio API and ships ES2022 syntax, both available in every evergreen browser.
 
 | Browser | Minimum version |
 | ------- | --------------- |
@@ -54,6 +54,6 @@ In unsupported environments — including server-side rendering — `createEmitt
 
 ## Next steps
 
-- [Install Pue JS](/docs/installation) in your project.
+- [Install Pue&thinsp;JS](/docs/installation) in your project.
 - Ship your first emission with the [Quick Start](/docs/quick-start).
 - Understand the runtime in [Architecture](/docs/concepts).

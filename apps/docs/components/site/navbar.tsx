@@ -54,7 +54,7 @@ export function Navbar(): React.JSX.Element {
             href="/"
           >
             <LogoMark preload />
-            <span className={css({ fontWeight: "semibold", letterSpacing: "-0.02em" })}>Pue JS</span>
+            <span className={css({ fontWeight: "semibold", letterSpacing: "-0.02em" })}>Pue&thinsp;JS</span>
             <span
               className={css({
                 fontFamily: "mono",
