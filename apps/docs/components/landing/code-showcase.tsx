@@ -56,7 +56,7 @@ export function CodeShowcase(): React.JSX.Element {
           <span className={eyebrow}>02 — API</span>
           <h2 className={sectionTitle}>One function. Total acoustic control.</h2>
           <p className={sectionLead}>
-            Pue JS exposes a single, declarative entry point. Describe your acoustic profile once — pitch envelope,
+            Pue&thinsp;JS exposes a single, declarative entry point. Describe your acoustic profile once — pitch envelope,
             resonance, duration — and the runtime handles sampling, throttling and scheduling.
           </p>
 
