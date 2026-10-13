@@ -16,7 +16,8 @@ const button = defineRecipe({
     letterSpacing: "-0.01em",
     whiteSpace: "nowrap",
     cursor: "pointer",
-    transition: "background 160ms ease, box-shadow 160ms ease, transform 160ms ease, border-color 160ms ease",
+    transition:
+      "background 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease, border-color 160ms ease",
     _focusVisible: {
       outline: "2px solid token(colors.primary)",
       outlineOffset: "2px",
