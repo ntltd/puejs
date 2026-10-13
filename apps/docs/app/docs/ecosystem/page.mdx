@@ -12,7 +12,7 @@ The core runtime is framework agnostic. React has an official adapter; with othe
 
 <InstallCommand packages="@puejs/core @puejs/react" />
 
-```tsx
+```tsx:feed.tsx
 "use client";
 
 import { usePue } from "@puejs/react";
@@ -39,7 +39,7 @@ The emitter is created on mount, updated when options change and destroyed on un
 
 Wrap your application in `PueProvider` to share default options and a single `AudioContext` between every `usePue` call:
 
-```tsx
+```tsx:app/layout.tsx
 import { PueProvider } from "@puejs/react";
 
 export default function RootLayout({ children }: { children: React.ReactNode }): React.JSX.Element {
@@ -59,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }):
 
 ## Vue
 
-```vue
+```vue:Feed.vue
 <script setup lang="ts">
 import { createEmitter, type Emitter } from "@puejs/core";
 import { onBeforeUnmount, onMounted, ref } from "vue";

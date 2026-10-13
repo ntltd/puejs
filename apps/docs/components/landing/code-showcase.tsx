@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { css, cx } from "styled-system/css";
 import { button } from "styled-system/recipes";
+import { CodeHeader } from "../code/code-block";
 import { CodeLines } from "../code/code-lines";
 import { container, eyebrow, sectionLead, sectionTitle } from "../site/container";
 import { ArrowRightIcon } from "../site/icons";
@@ -99,42 +100,7 @@ export function CodeShowcase(): React.JSX.Element {
             boxShadow: "0 0 0 1px rgba(0,0,0,0.4), 0 40px 120px -40px rgba(132, 204, 22, 0.25)",
           })}
         >
-          <div
-            className={css({
-              display: "flex",
-              alignItems: "center",
-              gap: "4",
-              height: "11",
-              px: "4",
-              borderBottomWidth: "1px",
-              borderColor: "border",
-            })}
-          >
-            <div aria-hidden="true" className={css({ display: "flex", gap: "1.5" })}>
-              {[0, 1, 2].map((dot) => (
-                <span
-                  className={css({ width: "2.5", height: "2.5", borderRadius: "full", bg: "border.strong" })}
-                  key={dot}
-                />
-              ))}
-            </div>
-            <figcaption
-              className={css({
-                fontFamily: "mono",
-                fontSize: "xs",
-                color: "fg",
-                px: "2.5",
-                py: "1",
-                borderRadius: "sm",
-                bg: "carbon",
-              })}
-            >
-              emitter.ts
-            </figcaption>
-            <span className={css({ ml: "auto", fontFamily: "mono", fontSize: "2xs", color: "fg.subtle" })}>
-              TypeScript
-            </span>
-          </div>
+          <CodeHeader filename="emitter.ts" language="ts" windowDots />
 
           <CodeLines code={source} lineNumbers />
         </figure>

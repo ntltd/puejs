@@ -14,7 +14,7 @@ This guide takes you from installation to a production-ready acoustic scroll int
 
 An emitter binds an acoustic profile to a scroll container. Pass `window` to observe the document, or any scrollable element.
 
-```ts
+```ts:emitter.ts
 import { createEmitter, presets } from "@puejs/core";
 
 const emitter = createEmitter(window, {
@@ -28,7 +28,7 @@ At this point the emitter is in the `idle` state. It observes nothing and produc
 
 Browsers only allow audio playback after a user interaction. Call `start()` from a gesture handler — a click on a dedicated control is the recommended pattern.
 
-```ts
+```ts:emitter.ts
 const toggle = document.querySelector<HTMLButtonElement>("#acoustic-feedback");
 
 toggle?.addEventListener("click", async () => {
@@ -48,7 +48,7 @@ Once started, every scroll above the velocity threshold triggers an emission.
 
 Presets are a starting point. Every parameter can be overridden, and the result is fully type-checked.
 
-```ts
+```ts:emitter.ts
 const emitter = createEmitter(window, {
   preset: presets.organic,
   pitch: { min: 0.82, max: 1.24 },
@@ -60,7 +60,7 @@ const emitter = createEmitter(window, {
 
 Options can also be changed at runtime without recreating the emitter:
 
-```ts
+```ts:emitter.ts
 emitter.update({ resonance: 0.4, volume: 0.6 });
 ```
 
@@ -68,7 +68,7 @@ emitter.update({ resonance: 0.4, volume: 0.6 });
 
 Emitters hold an `AudioContext` and a scroll listener. Release them when the view unmounts.
 
-```ts
+```ts:emitter.ts
 emitter.destroy();
 ```
 

@@ -15,7 +15,80 @@ const languageLabel: Record<string, string> = {
   http: "HTTP",
 };
 
-export function CodeBlock({ code, language = "ts" }: { code: string; language?: string }): React.JSX.Element {
+type CodeHeaderProps = {
+  language: string;
+  filename?: string;
+  /** Prefixes the header with the three window dots of the landing showcase. */
+  windowDots?: boolean;
+};
+
+/** Code panel title bar: optional window dots, the file name as a tab, the language on the right. */
+export function CodeHeader({ language, filename, windowDots = false }: CodeHeaderProps): React.JSX.Element {
+  return (
+    <div
+      className={css({
+        display: "flex",
+        alignItems: "center",
+        gap: "4",
+        height: "11",
+        px: "4",
+        borderBottomWidth: "1px",
+        borderColor: "border",
+      })}
+    >
+      {windowDots ? (
+        <div aria-hidden="true" className={css({ display: "flex", gap: "1.5" })}>
+          {[0, 1, 2].map((dot) => (
+            <span
+              className={css({ width: "2.5", height: "2.5", borderRadius: "full", bg: "border.strong" })}
+              key={dot}
+            />
+          ))}
+        </div>
+      ) : null}
+      {filename ? (
+        <figcaption
+          className={css({
+            minWidth: "0",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            fontFamily: "mono",
+            fontSize: "xs",
+            color: "fg",
+            px: "2.5",
+            py: "1",
+            borderRadius: "sm",
+            bg: "carbon",
+          })}
+        >
+          {filename}
+        </figcaption>
+      ) : null}
+      <span
+        className={css({
+          ml: "auto",
+          flexShrink: "0",
+          fontFamily: "mono",
+          fontSize: "2xs",
+          color: "fg.subtle",
+        })}
+      >
+        {languageLabel[language] ?? language}
+      </span>
+    </div>
+  );
+}
+
+export function CodeBlock({
+  code,
+  language = "ts",
+  filename,
+}: {
+  code: string;
+  language?: string;
+  filename?: string;
+}): React.JSX.Element {
   return (
     <figure
       className={css({
@@ -28,22 +101,7 @@ export function CodeBlock({ code, language = "ts" }: { code: string; language?: 
         overflow: "hidden",
       })}
     >
-      <figcaption
-        className={css({
-          display: "flex",
-          alignItems: "center",
-          height: "9",
-          px: "4",
-          borderBottomWidth: "1px",
-          borderColor: "border",
-          fontFamily: "mono",
-          fontSize: "2xs",
-          letterSpacing: "0.04em",
-          color: "fg.subtle",
-        })}
-      >
-        {languageLabel[language] ?? language}
-      </figcaption>
+      <CodeHeader filename={filename} language={language} />
       <CodeLines className={css({ py: "4" })} code={code} language={language} />
     </figure>
   );

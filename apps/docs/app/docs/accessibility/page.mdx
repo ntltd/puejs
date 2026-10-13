@@ -20,7 +20,7 @@ Set `autoUnlock: false` if you want acoustic feedback to be enabled exclusively 
 
 Users who set `prefers-reduced-motion: reduce` have asked for fewer sensory effects. When `respectReducedMotion` is `true` (the default), the emitter stays silent for these users and reacts live if the preference changes.
 
-```ts
+```ts:emitter.ts
 createEmitter(window, {
   // Only disable this if acoustic feedback is the explicit purpose of the page.
   respectReducedMotion: true,
@@ -31,7 +31,7 @@ createEmitter(window, {
 
 [WCAG 2.2 success criterion 1.4.2](https://www.w3.org/WAI/WCAG22/Understanding/audio-control) requires a mechanism to stop audio that plays automatically. Individual emissions are short, but a sustained scroll produces a continuous stream. Always expose a visible toggle, and persist the user's choice.
 
-```tsx
+```tsx:acoustic-toggle.tsx
 "use client";
 
 import { usePue } from "@puejs/react";

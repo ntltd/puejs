@@ -151,8 +151,9 @@ const components: MDXComponents = {
     // Fenced code blocks arrive as <pre><code className="language-xx">source</code></pre>.
     if (isValidElement<{ className?: string; children?: React.ReactNode }>(children)) {
       const { className = "", children: source } = children.props;
-      const language = /language-(\w+)/.exec(className)?.[1];
-      if (typeof source === "string") return <CodeBlock code={source} language={language} />;
+      // An optional file name follows the language: ```ts:emitter.ts
+      const [, language, filename] = /language-([\w-]+)(?::(\S+))?/.exec(className) ?? [];
+      if (typeof source === "string") return <CodeBlock code={source} filename={filename} language={language} />;
     }
     return <pre>{children}</pre>;
   },

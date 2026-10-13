@@ -6,7 +6,7 @@ export const metadata = pageMetadata("/docs/concepts");
 
 This page describes the Pue JS runtime from the moment a scroll event is observed to the moment an emission reaches the audio output. Understanding the pipeline is not required to use the library, but it will help you make informed tuning decisions.
 
-```ts
+```ts:pipeline.ts
 // The emission pipeline, conceptually
 scroll → sample → kinematics → tonnage → odor → voice → destination
 ```
@@ -59,7 +59,7 @@ Three built-in curves are provided — `"linear"`, `"logarithmic"` (default) and
 
 Custom curves are plain functions of the velocity:
 
-```ts
+```ts:tonnage.ts
 import { createEmitter, defineTonnageCurve } from "@puejs/core";
 
 // Silent below 200 px/s, saturates at 3000 px/s
@@ -88,7 +88,7 @@ Options passed alongside `preset` are merged over it, so a preset can be refined
 
 **Odors** are the samples an emitter plays. Built-in odors live in their own ES modules under `@puejs/core/odors` and inline their audio, so there is nothing to host.
 
-```ts
+```ts:emitter.ts
 import { createEmitter } from "@puejs/core";
 import { staccato, sustained } from "@puejs/core/odors";
 
@@ -111,7 +111,7 @@ Every odor is trimmed and peak-normalized at build time, so emissions start soun
 
 `soprano`, `pesante`, `sforzando`, `fortissimo` and `cathedral` are expressive odors: they are not referenced by any preset, so they only reach your bundle when you import them.
 
-```ts
+```ts:emitter.ts
 import { createEmitter } from "@puejs/core";
 import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "@puejs/core/odors";
 

@@ -52,7 +52,7 @@ A dedicated API lets user agents enforce the safety, consent and rate-limiting g
 
 ### Overview
 
-```ts
+```ts:scent.ts
 const device = await navigator.olfaction.requestDevice();
 
 await device.emit({
@@ -69,7 +69,7 @@ await device.emit({
 
 ### WebIDL
 
-```webidl
+```webidl:olfaction.webidl
 [Exposed=Window, SecureContext]
 partial interface Navigator {
   [SameObject] readonly attribute Olfaction olfaction;
@@ -136,7 +136,7 @@ Olfactory output has high latency: scent takes hundreds of milliseconds to trave
 
 By default, `when` is a `DOMHighResTimeStamp` on the `performance.now()` timeline. When `audioContext` is provided, `when` is instead interpreted in seconds, in that context's time coordinate system, so that olfactory and acoustic events share a single clock:
 
-```ts
+```ts:scent.ts
 const context = new AudioContext();
 
 device.emit({
@@ -157,13 +157,13 @@ User agents use this value to enforce a **clearance budget**. A new emission is 
 
 ### Feature detection
 
-```ts
+```ts:scent.ts
 if ("olfaction" in navigator) {
   const [device] = await navigator.olfaction.getDevices();
 }
 ```
 
-```css
+```css:styles.css
 @media (olfaction: available) {
   .scent-toggle {
     display: inline-flex;
@@ -175,7 +175,7 @@ if ("olfaction" in navigator) {
 
 Pue JS will ship experimental support behind the `@puejs/olfactory` entry point once a browser exposes the API behind a flag. The adapter maps each acoustic emission's tonnage to olfactory intensity, and its odor to a default note blend:
 
-```ts
+```ts:emitter.ts
 import { createEmitter } from "@puejs/core";
 import { withOlfaction } from "@puejs/olfactory";
 

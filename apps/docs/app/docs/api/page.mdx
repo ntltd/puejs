@@ -12,7 +12,7 @@ This page documents every public export of Pue JS. All signatures are written in
 
 Creates an emitter bound to a scroll container.
 
-```ts
+```ts:core.d.ts
 function createEmitter(target: Window | Element, options?: EmitterOptions): Emitter;
 ```
 
@@ -23,7 +23,7 @@ function createEmitter(target: Window | Element, options?: EmitterOptions): Emit
 
 Returns an [`Emitter`](#emitter) in the `idle` state. Invalid options throw `E_INVALID_OPTION`. On the server, or without Web Audio, the returned emitter is inert: its methods resolve immediately and it never emits.
 
-```ts
+```ts:feed.ts
 import { createEmitter } from "@puejs/core";
 
 const emitter = createEmitter(document.querySelector("#feed")!, { preset: "crisp" });
@@ -48,7 +48,7 @@ const emitter = createEmitter(document.querySelector("#feed")!, { preset: "crisp
 
 ## Emitter
 
-```ts
+```ts:core.d.ts
 interface Emitter {
   readonly state: EmitterState;
   readonly context: AudioContext | null;
@@ -76,7 +76,7 @@ Stops observing. In-flight emissions finish naturally. The emitter returns to `i
 
 Merges new options without interrupting observation. Invalid options throw `E_INVALID_OPTION` and leave the current options untouched. `audioContext` cannot change after `start()`.
 
-```ts
+```ts:emitter.ts
 emitter.update({ preset: "deep", volume: 0.5 });
 ```
 
@@ -93,7 +93,7 @@ Triggers an emission manually, independently of scroll. Ignored unless the emitt
 
 Subscribes to and unsubscribes from emitter events. `on()` returns an unsubscribe function.
 
-```ts
+```ts:telemetry.ts
 const unsubscribe = emitter.on("emit", ({ tonnage, odor }) => {
   console.debug(`emission · ${odor} · tonnage=${tonnage.toFixed(2)}`);
 });
@@ -105,7 +105,7 @@ Removes every listener, stops every voice and closes the private audio context, 
 
 ## Events
 
-```ts
+```ts:core.d.ts
 interface EmitterEvents {
   emit: EmissionEvent;
   statechange: { previous: EmitterState; current: EmitterState };
@@ -128,7 +128,7 @@ interface EmitterEvents {
 
 ## Presets
 
-```ts
+```ts:core.d.ts
 const presets: Readonly<Record<PresetName, AcousticProfile>>;
 ```
 
@@ -141,7 +141,7 @@ const presets: Readonly<Record<PresetName, AcousticProfile>>;
 
 Presets are frozen objects. Spread them to derive your own:
 
-```ts
+```ts:brand.ts
 import { presets, type AcousticProfile } from "@puejs/core";
 
 export const brand: AcousticProfile = { ...presets.organic, resonance: 0.55, duration: 360 };
@@ -151,7 +151,7 @@ export const brand: AcousticProfile = { ...presets.organic, resonance: 0.55, dur
 
 ### `defineTonnageCurve()`
 
-```ts
+```ts:core.d.ts
 function defineTonnageCurve(curve: (velocity: number) => number): TonnageCurve;
 ```
 
@@ -159,7 +159,7 @@ The function receives the smoothed velocity in px/s and must return a value betw
 
 ## Odors
 
-```ts
+```ts:emitter.ts
 import { cathedral, fortissimo, pesante, sforzando, soprano, staccato, sustained } from "@puejs/core/odors";
 ```
 
@@ -179,7 +179,7 @@ Odors longer than the emitter's `duration` are faded out when they reach it.
 
 Declares an odor from your own sample.
 
-```ts
+```ts:core.d.ts
 function defineOdor(definition: { name: string; src: string; tonnage?: [number, number] }): Odor;
 ```
 
@@ -195,7 +195,7 @@ URL odors are fetched and decoded on `start()`.
 
 ### `isSupported()`
 
-```ts
+```ts:core.d.ts
 function isSupported(): boolean;
 ```
 
@@ -203,7 +203,7 @@ Returns `true` when the Web Audio API is available. Always `false` on the server
 
 ### `unlock()`
 
-```ts
+```ts:core.d.ts
 function unlock(context?: AudioContext): Promise<boolean>;
 ```
 
@@ -211,7 +211,7 @@ Resumes the given audio context — or every context created by Pue JS — from 
 
 ## Types
 
-```ts
+```ts:core.d.ts
 type PresetName = "organic" | "crisp" | "deep" | "discreet";
 
 type EmitterState = "idle" | "suspended" | "running" | "destroyed";
@@ -239,7 +239,7 @@ interface AcousticProfile {
 
 Every error thrown or dispatched by Pue JS is a `PueError` with a stable `code`.
 
-```ts
+```ts:core.d.ts
 class PueError extends Error {
   readonly code: "E_DESTROYED" | "E_INVALID_OPTION" | "E_DECODE";
 }
@@ -257,7 +257,7 @@ Available from `@puejs/react`. See [Framework Adapters](/docs/ecosystem#react) f
 
 ### `usePue()`
 
-```ts
+```ts:react.d.ts
 function usePue<T extends Element = Element>(
   options?: EmitterOptions | false,
   config?: { autoStart?: boolean },
