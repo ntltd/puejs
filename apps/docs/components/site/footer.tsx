@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { css, cx } from "styled-system/css";
 import { container } from "./container";
+import { repositoryUrl } from "../../lib/site";
 import { LogoMark } from "./logo-mark";
-
-const repository = "https://github.com/ntltd/puejs";
 
 const columns = [
   {
@@ -21,8 +20,8 @@ const columns = [
     links: [
       { label: "Manifesto", href: "/manifesto" },
       { label: "RFCs", href: "/rfcs" },
-      { label: "GitHub", href: repository },
-      { label: "License", href: `${repository}/blob/main/LICENSE` },
+      { label: "GutHub", href: repositoryUrl, title: "GitHub" },
+      { label: "License", href: `${repositoryUrl}/blob/main/LICENSE` },
     ],
   },
 ];
@@ -76,7 +75,7 @@ export function Footer(): React.JSX.Element {
                         {item.label}
                       </Link>
                     ) : (
-                      <a className={link} href={item.href} rel="noreferrer" target="_blank">
+                      <a className={link} href={item.href} rel="noreferrer" target="_blank" title={item.title}>
                         {item.label}
                       </a>
                     )}

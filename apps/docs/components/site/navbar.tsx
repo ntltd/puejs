@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { css, cx } from "styled-system/css";
 import { button } from "styled-system/recipes";
+import { repositoryUrl } from "../../lib/site";
 import { AcousticToggle } from "./acoustic-toggle";
 import { container } from "./container";
 import { GlyphFlat, GlyphSwirl } from "./glyphs";
@@ -90,12 +91,12 @@ export function Navbar(): React.JSX.Element {
 
         <div className={css({ display: "flex", alignItems: "center", gap: "2" })}>
           <AcousticToggle />
-          {/* Decorative repository badge: intentionally not a link */}
-          <div
-            className={cx(
-              button({ variant: "ghost" }),
-              css({ cursor: "default", _hover: { color: "fg.muted", borderColor: "border" } }),
-            )}
+          <a
+            className={button({ variant: "ghost" })}
+            href={repositoryUrl}
+            rel="noreferrer"
+            target="_blank"
+            title="GitHub"
           >
             <span
               aria-hidden="true"
@@ -106,6 +107,9 @@ export function Navbar(): React.JSX.Element {
                 height: "5",
                 borderRadius: "full",
                 bg: "fg.muted",
+                transition: "background 160ms ease",
+                // Brightens with the label when the badge is hovered
+                "a:hover > &": { bg: "fg" },
                 color: "carbon",
                 overflow: "hidden",
               })}
@@ -130,6 +134,9 @@ export function Navbar(): React.JSX.Element {
                 ml: "0.5",
                 borderLeftWidth: "1px",
                 borderColor: "border",
+                transition: "border-color 160ms ease",
+                // Follows the badge border on hover
+                "a:hover > &": { borderColor: "border.strong" },
                 fontFamily: "mono",
                 fontSize: "xs",
                 color: "fg",
@@ -138,7 +145,7 @@ export function Navbar(): React.JSX.Element {
               <GlyphFlat size={12} />
               {starCount()}
             </span>
-          </div>
+          </a>
         </div>
       </nav>
     </header>

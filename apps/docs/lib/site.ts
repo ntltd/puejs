@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 export const siteName = "Pue JS";
 
+export const repositoryUrl = "https://github.com/ntltd/puejs";
+
 /** Absolute base URL, required to resolve canonical links and Open Graph image URLs. */
 export const siteUrl = new URL(
   process.env.NEXT_PUBLIC_SITE_URL ??
