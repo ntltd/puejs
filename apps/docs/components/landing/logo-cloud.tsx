@@ -11,6 +11,7 @@ const wordmark = css({
   letterSpacing: "-0.02em",
   whiteSpace: "nowrap",
   transition: "color 160ms ease",
+  cursor: "default",
   _hover: { color: "fg.muted" },
 });
 
