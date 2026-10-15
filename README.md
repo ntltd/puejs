@@ -2,19 +2,47 @@
 
 Acoustic Scroll Events for the modern web.
 
-## Stack
+Documentation: [www.puejs.org](https://www.puejs.org)
 
-- [Turborepo](https://turborepo.com) monorepo (yarn workspaces)
-- `apps/docs`: landing page — [Next.js 16](https://nextjs.org) (App Router, Turbopack), React 19
-- `packages/puejs`: `@puejs/core`, the library (zero dependencies, Web Audio)
-- `packages/react`: `@puejs/react`, the React adapter (`usePue`, `PueProvider`)
+## Packages
+
+| Package                            | Description                                               |
+| ---------------------------------- | --------------------------------------------------------- |
+| [`@puejs/core`](./packages/puejs)  | The library: zero dependencies, Web Audio, strictly typed |
+| [`@puejs/react`](./packages/react) | React adapter (`usePue`, `PueProvider`)                   |
+
+```sh
+npm install @puejs/core
+npm install @puejs/core @puejs/react # with React 18 or 19
+```
+
+See each package's README for usage.
+
+## Repository
+
+- [Turborepo](https://turborepo.com) monorepo (Yarn workspaces)
+- `packages/puejs`: `@puejs/core`, built with [tsdown](https://tsdown.dev), tested with [Vitest](https://vitest.dev)
+- `packages/react`: `@puejs/react`, same tooling
+- `apps/docs`: landing page, docs and playground — [Next.js 16](https://nextjs.org) (App Router, Turbopack), React 19, MDX
 - Styling: [Panda CSS 2](https://panda-css.com) (design tokens + recipes in `apps/docs/panda.config.ts`)
-- `packages/eslint-config-custom`: shared ESLint 9 flat config (`eslint-config-next` + `eslint-config-turbo`)
+- `packages/eslint-config-custom`: shared ESLint 9 flat config
 - `packages/tsconfig`: shared `tsconfig.json`s (TypeScript 6)
 
 ## Requirements
 
-Node.js 22+ (see `.nvmrc`), Yarn 1.22.
+Node.js 22+ (24 in `.nvmrc`), Yarn 1.22.
+
+## Scripts
+
+```sh
+yarn install    # also runs `panda codegen` (generates apps/docs/styled-system)
+yarn dev        # builds the packages, then serves the docs on http://localhost:3001
+yarn build
+yarn test
+yarn lint
+yarn typecheck
+yarn format
+```
 
 ## Environment
 
@@ -24,13 +52,10 @@ Node.js 22+ (see `.nvmrc`), Yarn 1.22.
 
 Defaults to `https://www.puejs.org` in production builds and `http://localhost:3001` in development.
 
-## Scripts
+## Contributing
 
-```sh
-yarn install    # also runs `panda codegen` (generates apps/docs/styled-system)
-yarn dev        # docs on http://localhost:3001
-yarn build
-yarn lint
-yarn typecheck
-yarn format
-```
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+## License
+
+Released into the public domain under the [Unlicense](./LICENSE).
