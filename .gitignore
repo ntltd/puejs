@@ -34,3 +34,13 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# editors
+.idea
+.vscode
+.fleet
+.zed
+.history
+*.swp
+*.sublime-project
+*.sublime-workspace
